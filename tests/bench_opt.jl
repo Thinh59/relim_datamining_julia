@@ -1,10 +1,8 @@
-# ============================================================
 # Benchmark so sánh bản cơ bản (Level 1, counter_only=false) và
 # bản tối ưu (Level 3, counter_only=true) của Relim.
-#
+
 # Đo: thời gian (ms) bằng BenchmarkTools, bộ nhớ cấp phát (MB) bằng @allocated.
 # Chạy: julia --project=. tests/bench_opt.jl
-# ============================================================
 
 using BenchmarkTools
 using Printf
