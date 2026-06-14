@@ -177,8 +177,7 @@ relim_datamining_julia/
 │   └── test_benchmark.jl     # Benchmark + so với SPMF
 ├── data/
 │   ├── toy/                  # CSDL nhỏ cho ví dụ tay
-│   ├── benchmark/            # CSDL benchmark (chess, mushroom, retail, ...)
-│   └── real_world/           # CSDL thực tế (Market Basket)
+│   └── benchmark/            # CSDL benchmark (chess, mushroom, retail, ...)
 ├── notebooks/
 │   └── demo.ipynb            # Demo phần ứng dụng
 └── docs/
