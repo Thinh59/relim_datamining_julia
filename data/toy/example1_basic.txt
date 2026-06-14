@@ -1,0 +1,8 @@
+# Ví dụ 1: Cơ sở — 6 giao dịch, 6 item {a,b,c,d,e,f}, minsup = 3
+# TID | Items
+1 | a b c d
+2 | b c e f
+3 | a b d
+4 | b c d e
+5 | a c d
+6 | b d e

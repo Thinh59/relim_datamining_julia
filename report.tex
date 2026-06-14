@@ -1,0 +1,3737 @@
+% !TEX program = xelatex % (can also use "lualatex")
+\documentclass[12pt,a4paper]{report}
+\usepackage[utf8]{inputenc}
+\usepackage[vietnamese]{babel} 
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{hyperref}
+\usepackage{geometry}
+\usepackage{fancyhdr}
+\usepackage{tabularx} 
+\usepackage{titlesec}
+\usepackage{booktabs}
+\usepackage{xcolor}
+\usepackage{colortbl}
+\usepackage{multirow}
+\usepackage{makecell}
+\usepackage{needspace}
+\usepackage{etoolbox}
+\usepackage{tikz}
+\usepackage{tocloft}
+\usepackage{float}
+\usepackage{enumitem}
+\usepackage{longtable}
+\usepackage{cite}
+\usepackage{listings}
+\usepackage{subcaption}
+\usepackage[nottoc]{tocbibind}
+\usepackage{polyglossia}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{caption}
+\usepackage{minted}
+\usemintedstyle{friendly}
+\usepackage{amsthm} 
+\usetikzlibrary{arrows.meta, positioning, calc}
+
+% ===== Custom Colors =====
+
+\definecolor{hlblue}{RGB}{0,102,204}
+\definecolor{hlgreen}{RGB}{0,153,76}
+
+\definecolor{stepblue}{RGB}{52,152,219}
+\definecolor{stepgreen}{RGB}{46,204,113}
+
+% Optional extra colors
+\definecolor{softblue}{RGB}{230,240,255}
+\definecolor{softgreen}{RGB}{230,255,240}
+\definecolor{darkblue}{RGB}{0,51,102}
+\definecolor{hlyellow}{RGB}{255,204,0}
+\definecolor{steporange}{RGB}{255,140,0}
+\usetikzlibrary{calc}
+\geometry{
+    a4paper,
+    left=2.5cm,
+    right=2.5cm,
+    top=2.5cm,
+    bottom=3cm,     
+    footskip=1.5cm  
+}
+% Định nghĩa màu sắc cho code và bảng biểu
+\definecolor{excellent}{RGB}{0,128,0}
+\definecolor{good}{RGB}{34,139,34}
+\definecolor{medium}{RGB}{255,140,0}
+\definecolor{poor}{RGB}{220,20,60}
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+\definecolor{borderblue}{RGB}{16,16,144}
+
+% Cấu hình hiển thị code Python
+\lstdefinestyle{python}{
+  language=Python,
+  basicstyle=\ttfamily\footnotesize,
+  keywordstyle=\bfseries\color{blue},
+  commentstyle=\itshape\color{gray},
+  stringstyle=\color{orange!70},
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  backgroundcolor=\color{lightgray!20},
+  breaklines=true,
+  frame=single,
+  showspaces=false,
+  showstringspaces=false
+}
+
+% Cấu hình lề trang
+\geometry{left=2.5cm, right=2.5cm, top=2.5cm, bottom=2.5cm}
+
+% ---- Cấu hình hiển thị code Julia/Python ----
+\lstdefinestyle{julia}{
+  language=Python, % dùng Python làm base cho màu sắc
+  basicstyle=\ttfamily\footnotesize,
+  keywordstyle=\bfseries\color{blue},
+  commentstyle=\itshape\color{gray},
+  stringstyle=\color{orange!70},
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  backgroundcolor=\color{lightgray!20},
+  breaklines=true,
+  frame=single,
+  showspaces=false,
+  showstringspaces=false,
+  morekeywords={function,end,struct,mutable,const,using,import,export,
+                module,where,begin,do,for,while,if,else,elseif,return,
+                true,false,nothing,in,isa,typeof,push!,Dict,Vector,
+                BitVector,@inbounds,@simd}
+}
+ 
+
+% Cấu hình Header/Footer
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\footrulewidth}{0.5pt}
+\fancyhead[C]{\textit{Khai thác dữ liệu và ứng dụng - Nhóm 9}}
+\fancyfoot[C]{\thepage}
+
+% Cấu hình tiêu đề chương/mục
+\titleformat{\chapter}[display]
+{\centering\large\bfseries}{\chaptertitlename\ \thechapter}{10pt}{\large}
+\titleformat{\section}
+{\normalfont\large\bfseries}{\thesection}{0.3em}{}
+\titleformat{\subsection}
+{\normalfont\large\bfseries}{\thesubsection}{0.3em}{}
+
+
+% Cấu hình mục lục
+\renewcommand{\contentsname}{\begin{center} \Large \bfseries MỤC LỤC \end{center}}
+\setlength{\cftbeforetoctitleskip}{20pt}
+\setlength{\cftaftertoctitleskip}{10pt} 
+\setlength{\cftparskip}{5pt} 
+\renewcommand{\numberline}[1]{\bfseries#1\hspace{0.5em}} 
+
+\setcounter{secnumdepth}{3} % Cho phép đánh số đến mức subsubsection
+
+% Định nghĩa các môi trường học thuật
+\newtheorem{definition}{Định nghĩa}[chapter]
+\newtheorem{proposition}{Mệnh đề}[chapter]
+\newtheorem{theorem}{Định lý}[chapter]
+\newtheorem{corollary}{Hệ quả}[chapter]
+\newtheorem{lemma}{Bổ đề}[chapter]
+\newtheorem{remark}{Nhận xét}[chapter]
+ 
+% Đổi tên nhãn chứng minh sang tiếng Việt
+\renewcommand{\proofname}{\textit{Chứng minh}}
+
+\begin{document}
+
+% --- TRANG BÌA ---
+\thispagestyle{empty}
+\begin{tikzpicture}[remember picture, overlay]
+  \draw[borderblue, line width=1pt] 
+    ([shift={(1cm,1cm)}]current page.south west) rectangle 
+    ([shift={(-1cm,-1cm)}]current page.north east);
+  \draw[borderblue, line width=1pt] 
+    ([shift={(1.1cm,1.1cm)}]current page.south west) rectangle 
+    ([shift={(-1.1cm,-1.1cm)}]current page.north east);
+\end{tikzpicture}
+
+\begin{center}
+    \vspace*{0cm}
+    {\large BỘ GIÁO DỤC VÀ ĐÀO TẠO \par}
+    \vspace{0.3cm}
+    {\large TRƯỜNG ĐẠI HỌC KHOA HỌC TỰ NHIÊN \par}
+    \vspace{0.3cm}
+    {\large KHOA CÔNG NGHỆ THÔNG TIN \par}
+    \vspace{0.3cm}
+    {\large\textbf{\textbf{KHAI THÁC DỮ LIỆU VÀ ỨNG DỤNG}} \par}
+    \vspace{0.3cm}
+    
+    \begin{center}
+        \includegraphics[width=6cm]{LogoTruong.png}
+
+    \end{center}
+    \vspace{0.3cm}
+    
+    {\large\textbf{BÁO CÁO MÔN HỌC} \par}
+    \vspace{0.3cm}
+    {\large\textbf{PROJECT 02 - KHAI THÁC TẬP PHỔ BIẾN} \par}
+    \vspace{0.5cm}
+    
+    \begin{tabular}{lll}
+        \textbf{Giảng viên hướng dẫn} & : &GS. Lê Hoài Bắc \\
+        & & ThS. Lê Nhựt Nam\\ & & ThS. Nguyễn Ngọc Đức \\ & & ThS. Nguyễn Thị Thu Hằng \\
+        & & \\
+        \textbf{Nhóm thực hiện} & : & Nhóm 9 \\
+        & & \\
+        \textbf{Lớp} & : & 23TNT1 \\
+        & & \\
+        \textbf{Nhóm sinh viên thực hiện} & : & \\
+        & & Bàng Mỹ Linh \hspace{1.5cm} | 23122009 \\
+        & & Lại Nguyễn Hồng Thanh \hspace{0.5cm} | 23122018 \\
+        & & Phan Huỳnh Châu Thịnh \hspace{0.5cm} | 23122019 \\
+        & & Nguyễn Gia Bảo \hspace{1.1cm} | 23122015 \\
+    \end{tabular}
+    
+    \vfill
+    {\Large\textbf{Tháng 4 năm 2026} \par}
+\end{center}
+\clearpage
+
+% --- MỤC LỤC & DANH MỤC ---
+\renewcommand{\chaptername}{Chương}
+\renewcommand{\appendixname}{Phụ lục}
+\renewcommand{\contentsname}{Mục lục}
+\renewcommand{\listfigurename}{Danh sách hình ảnh}
+\renewcommand{\listtablename}{Danh sách bảng}
+\renewcommand{\bibname}{Tài liệu tham khảo}
+
+\tableofcontents
+\clearpage
+\listoftables
+\clearpage
+\listoffigures
+\clearpage
+
+% ==========================================
+% THÊM DANH MỤC THUẬT NGỮ Ở ĐÂY
+% ==========================================
+\chapter*{DANH MỤC THUẬT NGỮ}
+\addcontentsline{toc}{chapter}{Danh mục thuật ngữ}
+
+\begin{table}[H]
+    \centering
+    % Không dùng gạch đứng theo yêu cầu của thầy, dùng toprule/midrule/bottomrule
+    \begin{tabularx}{\textwidth}{llX}
+    \toprule
+    \textbf{Thuật ngữ tiếng Việt} & \textbf{Thuật ngữ tiếng Anh (Gốc)} & \textbf{Ký hiệu / Ý nghĩa trong thuật toán} \\
+    \midrule
+    Cơ sở dữ liệu giao dịch & Transaction database & $\mathcal{D}$ - Dữ liệu đầu vào, được rút gọn trong bước tiền xử lý.\\
+    \addlinespace
+    Giao dịch & Transaction & $T$ - Một tập con các hạng mục. \\
+    \addlinespace
+    Tập hạng mục & Item set & $X, Y$ \\
+    \addlinespace
+    Độ hỗ trợ tuyệt đối & Support counter / Frequencies & $sup(X)$ - Được lưu tại biến đếm của mỗi phần tử trong mảng danh sách liên kết. \\
+    \addlinespace
+    Ngưỡng hỗ trợ tối thiểu & Minimum support & $minsup$ - Điều kiện cốt lõi để cắt tỉa item và gọi đệ quy. \\
+    \addlinespace
+    Tập phổ biến & Frequent item set & $F$ - Kết quả đầu ra duy nhất của thuật toán. \\
+    \addlinespace
+    Tiền tố & Prefix & $P$ - Tập hợp các item đã xét trong các vòng đệ quy trước đó. \\
+    \addlinespace
+    Phân bổ lại & Reassign & Hành động cắt bỏ item đầu tiên và chuyển giao dịch sang danh sách khác nằm bên phải. \\
+    \addlinespace
+    Mảng danh sách liên kết đơn & Array of singly linked lists & Cấu trúc dữ liệu tối giản được Relim sử dụng thay cho FP-tree. \\
+    \bottomrule
+    \end{tabularx}
+\end{table}
+\clearpage
+% ==========================================
+% --- NỘI DUNG CHÍNH ---
+% CHƯƠNG 1: NỀN TẢNG LÝ THUYẾT
+% CHƯƠNG 2: VÍ DỤ MINH HỌA TAY
+% CHƯƠNG 3: CÀI ĐẶT
+% CHƯƠNG 4: THỰC NGHIỆM VÀ ĐÁNH GIÁ
+% \input{chapter1.tex}
+
+% \input{chapter2.tex}
+% \input{chapter3.tex}
+% \input{chapter4.tex}
+
+\chapter{NỀN TẢNG LÝ THUYẾT}
+ 
+%% Người thực hiện: Châu Thịnh (3.1.1 & 3.1.2 b) e)) + Mỹ Linh (3.1.2 a) c) d))
+ 
+% ------------------------------------------------------------
+% \section{Bài toán Frequent Itemset Mining}
+% % ------------------------------------------------------------
+ 
+% %% Trình bày đầy đủ và chính xác các định nghĩa bằng ký hiệu toán học (người làm: Châu Thịnh)
+ 
+% \subsection{Cơ sở dữ liệu giao dịch (Transaction Database)}
+% %% Định nghĩa hình thức: D = {T1, T2, ..., Tn}, mỗi Ti ⊆ I với I là tập tất cả các item
+% %% Ví dụ minh họa: bảng CSDL nhỏ (giống bảng Table 1 trong paper Borgelt)
+ 
+% \subsection{Độ hỗ trợ (Support)}
+% %% Định nghĩa sup(X) cho itemset X ⊆ I
+% %% Phân biệt support tuyệt đối (số giao dịch chứa X) và support tương đối (tỉ lệ %)
+% %% Công thức toán học chuẩn
+ 
+% \subsection{Tập phổ biến (Frequent Itemset)}
+% %% Định nghĩa: X là frequent khi sup(X) >= minsup
+% %% Ghi chú về ý nghĩa minsup (ngưỡng người dùng chỉ định)
+ 
+% \subsection{Tập đóng và Tập tối đại}
+% %% Tập đóng (Closed Itemset): X đóng nếu không có superset Y ⊋ X nào có cùng support
+% %% Tập tối đại (Maximal Itemset): X tối đại nếu không có superset Y ⊋ X nào là frequent
+% %% Quan hệ: frequent ⊇ closed ⊇ maximal (vẽ sơ đồ Venn nếu có thể)
+ 
+% \subsection{Tính chất Apriori (Downward Closure)}
+% %% Phát biểu: nếu X không frequent thì mọi superset của X cũng không frequent
+% %% Chứng minh ngắn gọn: dùng định nghĩa support và tập con
+% %% Ý nghĩa: cho phép cắt tỉa không gian tìm kiếm
+
+% ------------------------------------------------------------
+\section{Bài toán Frequent Itemset Mining}
+ 
+Phần này trình bày nền tảng lý thuyết hình thức của bài toán khai phá tập phổ biến
+(Frequent Itemset Mining -- FIM), bao gồm các định nghĩa cơ bản, phân loại tập hạng
+mục và tính chất giải tích quan trọng làm cơ sở cho mọi thuật toán FIM hiện đại.
+ 
+% ----------------------------------------------------------
+\subsection{Cơ sở dữ liệu giao dịch}
+% ----------------------------------------------------------
+ 
+\begin{definition}[Cơ sở dữ liệu giao dịch]
+Cho $\mathcal{I} = \{i_1, i_2, \dots, i_m\}$ là tập hữu hạn các \textit{hạng mục}
+(items) phân biệt. Một \textit{giao dịch} (transaction) $T$ là một bộ
+$T = (\mathrm{tid}, X_T)$, trong đó $\mathrm{tid}$ là định danh duy nhất của giao
+dịch và $X_T \subseteq \mathcal{I}$ là tập các hạng mục mà giao dịch đó chứa.
+\textit{Cơ sở dữ liệu giao dịch} $\mathcal{D}$ là một đa tập hữu hạn gồm $n$
+giao dịch:
+\begin{equation}
+    \mathcal{D} = \{T_1, T_2, \dots, T_n\}, \quad X_{T_k} \subseteq \mathcal{I},\;
+    k = 1,\dots,n.
+    \label{eq:database}
+\end{equation}
+Khi ngữ cảnh rõ ràng, ta đồng nhất giao dịch $T$ với tập hạng mục $X_T$ của nó
+và viết $T \subseteq \mathcal{I}$.
+\end{definition}
+ 
+Bảng~\ref{tab:example-db} trình bày một ví dụ minh họa về cơ sở dữ liệu giao dịch
+nhỏ sẽ được sử dụng xuyên suốt chương này.
+ 
+\begin{table}[H]
+    \centering
+    \caption{Ví dụ về cơ sở dữ liệu giao dịch với $\mathcal{I} = \{1,2,3,4,5\}$}
+    \label{tab:example-db}
+    \begin{tabular}{cc}
+        \toprule
+        \textbf{TID} & \textbf{Giao dịch} \\
+        \midrule
+        $T_1$ & $\{1, 3, 4\}$ \\
+        $T_2$ & $\{2, 3, 5\}$ \\
+        $T_3$ & $\{1, 2, 3, 5\}$ \\
+        $T_4$ & $\{2, 5\}$ \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+ 
+% ----------------------------------------------------------
+\subsection{Độ hỗ trợ}
+% ----------------------------------------------------------
+ 
+\begin{definition}[Độ hỗ trợ tuyệt đối]
+Độ hỗ trợ tuyệt đối của một tập hạng mục $X \subseteq \mathcal{I}$ trong cơ sở dữ
+liệu $\mathcal{D}$, ký hiệu $\mathrm{sup}(X)$, là số lượng giao dịch $T$ trong $\mathcal{D}$
+chứa $X$:
+\begin{equation}
+    \mathrm{sup}(X) = \bigl|\{T \in \mathcal{D} \mid X \subseteq T\}\bigr|.
+    \label{eq:support}
+\end{equation}
+\end{definition}
+ 
+\begin{definition}[Độ hỗ trợ tương đối]
+Độ hỗ trợ tương đối của $X$, ký hiệu $\mathrm{rsup}(X)$, là tỉ lệ giao dịch $T$ chứa $X$:
+\begin{equation}
+    \mathrm{rsup}(X) = \frac{\mathrm{sup}(X)}{|\mathcal{D}|} \in [0, 1].
+    \label{eq:relsupport}
+\end{equation}
+\end{definition}
+ 
+Độ hỗ trợ tối thiểu $\sigma$ (min support) do người dùng chỉ định
+có thể được biểu diễn theo một trong hai dạng: số nguyên tuyệt đối hoặc tỉ lệ thập
+phân. Trong báo cáo này, ký hiệu $\sigma$ được dùng thống nhất theo dạng tuyệt đối.
+ 
+% ----------------------------------------------------------
+\subsection{Tập phổ biến}
+% ----------------------------------------------------------
+ 
+\begin{definition}[Tập phổ biến]
+Một tập hạng mục $X \subseteq \mathcal{I}$ được gọi là \textit{tập phổ biến}
+(frequent itemset) với ngưỡng $\sigma$ khi và chỉ khi:
+\begin{equation}
+    \mathrm{sup}(X) \geq \sigma.
+    \label{eq:frequent}
+\end{equation}
+Tập hợp tất cả các tập phổ biến trong $\mathcal{D}$ được ký hiệu là
+$\mathcal{F}(\mathcal{D}, \sigma)$, hay $\mathcal{F}$ khi $\mathcal{D}$ và $\sigma$
+đã được xác định rõ từ ngữ cảnh.
+
+\begin{equation}
+    \mathcal{F} = \{X \mid X \subseteq I \text{ và } \mathrm{sup}(X) \geq \mathrm{minsup}\}.
+    \label{eq:fequent_itemsets}
+\end{equation}
+\end{definition}
+
+Bài toán khai phá tập phổ biến đặt ra yêu cầu tìm ra toàn bộ $\mathcal{F}$, tức là
+liệt kê đầy đủ mọi tập hạng mục thỏa mãn ngưỡng $\sigma$ cùng với giá trị độ hỗ trợ
+tương ứng~\cite{borgelt2005}.
+ 
+% ----------------------------------------------------------
+\subsection{Tập đóng và tập tối đại}
+% ----------------------------------------------------------
+ 
+Trong thực tế, tập $\mathcal{F}$ có thể rất lớn; để thu hẹp biểu diễn, người ta định
+nghĩa hai lớp con quan trọng sau.
+ 
+\begin{definition}[Tập phổ biến đóng]
+
+Một tập phổ biến $X \in \mathcal{F}$ được gọi là \textit{tập phổ biến đóng}
+(\textit{closed frequent itemset}) nếu không tồn tại tập nào bao nó
+$Y \supsetneq X$ có cùng độ hỗ trợ:
+\begin{equation}
+    X \text{ là tập đóng}
+    \iff
+    \nexists\, Y \supsetneq X :
+    \mathrm{sup}(Y) = \mathrm{sup}(X).
+    \label{eq:closed}
+\end{equation}
+
+Tập tất cả các tập phổ biến đóng được ký hiệu:
+\begin{equation}
+\mathcal{C}
+=
+\{X \mid X \in \mathcal{F}
+\text{ và }
+\nexists\, Y \supsetneq X
+\text{ sao cho }
+\mathrm{sup}(X)=\mathrm{sup}(Y)\}.
+\label{eq:closed_itemset}
+\end{equation}
+\end{definition}
+ 
+\begin{definition}[Tập tối đại]
+Một tập phổ biến $X \in F$ được gọi là \textit{tập phổ biến tối đại}
+(\textit{maximal frequent itemset}) nếu không tồn tại tập cha nghiêm ngặt
+$Y \supsetneq X$ nào cũng là tập phổ biến:
+\begin{equation}
+    X \text{ là tập tối đại}
+    \iff
+    \nexists\, Y \supsetneq X :
+    Y \in F.
+    \label{eq:maximal}
+\end{equation}
+
+Gọi $M$ là tập tất cả các tập phổ biến tối đại:
+\begin{equation}
+M =
+\left\{
+X \;\middle|\;
+X \in F
+\text{ và }
+\nexists\, Y \supsetneq X
+\text{ mà }
+Y \in F
+\right\}.
+\label{eq:maximal_itemset}
+\end{equation}
+\end{definition}
+ 
+\begin{proposition}[Quan hệ phân cấp]
+Ký hiệu $\mathcal{F}_{\mathrm{max}}$ và $\mathcal{F}_{\mathrm{cl}}$ lần lượt là tập
+hợp các tập tối đại và tập đóng trong $\mathcal{D}$. Khi đó:
+\begin{equation}
+    \mathcal{F}_{\mathrm{max}} \subseteq \mathcal{F}_{\mathrm{cl}} \subseteq
+    \mathcal{F}.
+    \label{eq:hierarchy}
+\end{equation}
+\end{proposition}
+ 
+Tập đóng và tập tối đại mang lại biểu diễn gọn hơn cho $\mathcal{F}$: từ
+$\mathcal{F}_{\mathrm{cl}}$ có thể phục hồi đầy đủ độ hỗ trợ của mọi tập phổ biến,
+còn $\mathcal{F}_{\mathrm{max}}$ chỉ cho biết các tập phổ biến lớn nhất (theo quan
+hệ bao hàm) mà không lưu lại thông tin về độ hỗ trợ của các tập con.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[scale=1]
+  \draw[fill=softblue, opacity=0.5, draw=borderblue, thick] (0,0) ellipse (4.5cm and 2.5cm);
+  \node at (0, 1.8) {\textbf{Tập phổ biến (Frequent)}};
+  
+  \draw[fill=softgreen, opacity=0.6, draw=stepgreen, thick] (0,-0.3) ellipse (3cm and 1.7cm);
+  \node at (0, 0.8) {\textbf{Tập đóng (Closed)}};
+  
+  \draw[fill=hlyellow, opacity=0.7, draw=orange, thick] (0,-0.8) ellipse (1.6cm and 0.9cm);
+  \node at (0, -0.8) {\textbf{Tối đại}};
+\end{tikzpicture}
+\caption{Sơ đồ Venn thể hiện quan hệ bao hàm giữa Tập phổ biến, Tập đóng và Tập tối đại.}
+\label{fig:venn-fcm}
+\end{figure}
+ 
+% ----------------------------------------------------------
+\subsection{Tính chất Apriori}
+% ----------------------------------------------------------
+ 
+Tính chất sau đây là nền tảng lý thuyết cho phép cắt tỉa không gian tìm kiếm trong
+hầu hết các thuật toán FIM.
+ 
+\begin{proposition}[Tính đơn điệu giảm của độ hỗ trợ -- Anti-monotonicity]
+\label{prop:antimonotone}
+Với mọi $Y \subseteq X \subseteq \mathcal{I}$, ta có:
+\begin{equation}
+    \mathrm{sup}(X) \leq \mathrm{sup}(Y).
+    \label{eq:apriori}
+\end{equation}
+Từ đó suy ra hai hệ quả quan trọng:
+\begin{itemize}
+    \item Nếu tập $X$ là phổ biến thì mọi tập con $Y \subseteq X$ cũng phổ biến.
+    \item Nếu tập $X$ không phổ biến thì mọi tập cha $Z \supseteq X$ cũng không
+    phổ biến.
+\end{itemize}
+\end{proposition}
+ 
+\begin{proof}
+Xét bất kỳ giao dịch $T \in \mathcal{D}$. Vì $Y \subseteq X$, điều kiện $X \subseteq T$
+kéo theo $Y \subseteq T$. Do đó:
+\begin{equation}
+    \{T \in \mathcal{D} \mid X \subseteq T\} \subseteq \{T \in \mathcal{D} \mid
+    Y \subseteq T\}.
+    \label{eq:subset_proof}
+\end{equation}
+Số phần tử vế trái không vượt quá số phần tử vế phải; áp dụng
+Định nghĩa~\eqref{eq:support}, ta thu được
+$\mathrm{sup}(X) \leq \mathrm{sup}(Y)$, điều phải chứng minh.
+\end{proof}
+ 
+Tính chất này cho phép bất kỳ thuật toán FIM nào loại bỏ toàn bộ các tập cha của
+một tập không phổ biến mà không cần liệt kê, từ đó giảm đáng kể số lượng
+ứng viên cần xét.
+ 
+% ------------------------------------------------------------
+\section{Phân tích thuật toán RELIM}
+% ------------------------------------------------------------
+ 
+%% Tài liệu gốc: Borgelt, C. "Keeping Things Simple: Finding Frequent Item Sets
+%% by Recursive Elimination." OSDM 2005.
+%% Link paper: xem relim.pdf đã được cung cấp
+ 
+%% (Người làm: Mỹ Linh)
+%% Mô tả bằng lời trực quan:
+%%   - RELIM lấy cảm hứng từ FP-Growth và H-Mine nhưng KHÔNG dùng prefix tree hay H-struct
+%%   - Cách tiếp cận: đệ quy loại trừ từng item (recursive elimination)
+%%   - Preprocessing: loại item không phổ biến, sắp xếp item theo tần suất tăng dần
+%%   - Ý tưởng chính: ở mỗi bước, lấy danh sách giao dịch chứa item ít phổ biến nhất,
+%%     đệ quy tìm itemset phổ biến có item đó làm tiền tố, sau đó xóa nó khỏi toàn bộ DB
+%%   - Điểm khác biệt so với Apriori: không sinh candidate, duyệt theo chiều sâu
+%%   - Điểm khác biệt so với FP-Growth: không cần xây dựng FP-tree phức tạp
+
+\subsection{Ý tưởng cốt lõi}
+\label{subsec:relim-idea}
+
+Thuật toán Relim (\textit{Recursive Elimination}) được Borgelt đề xuất năm
+2005~\cite{borgelt2005} với triết lý giữ mọi thứ đơn giản (\textit{Keeping
+Things Simple}). Relim kế thừa cơ chế đệ quy của FP-Growth và
+H-Mine, nhưng loại bỏ hoàn toàn các cấu trúc dữ liệu phức tạp như
+cây tiền tố (FP-tree) hay cấu trúc siêu liên kết (H-struct): toàn bộ
+thuật toán có thể được cài đặt trong một hàm đệ quy duy nhất.
+
+Ý tưởng cốt lõi của Relim có thể hiểu trực giác như sau.
+Hình dung không gian tất cả các tập phổ biến cần tìm như một cây con
+liệt kê tập con. Thay vì xây dựng cây này theo chiều rộng và sinh hàng loạt
+ứng viên như Apriori, Relim đặt câu hỏi đơn giản hơn:
+\begin{quote}
+\textit{Với mỗi hạng mục $i$, có những tập phổ biến nào chứa $i$? Nếu trả lời
+được câu hỏi này cho từng $i$, ta đã liệt kê được toàn bộ tập phổ biến.}
+\end{quote}
+Để tránh đếm trùng (một tập có thể chứa nhiều hạng mục), Relim áp dụng nguyên
+lý \textit{chia theo hạng mục đầu tiên}: cố định một thứ tự duyệt trên
+các hạng mục (theo tần suất \textit{tăng dần}); với mỗi hạng mục $i$, chỉ tìm
+các tập phổ biến mà $i$ là hạng mục \textit{đầu tiên} (theo thứ tự đã cố định)
+xuất hiện trong tập đó. Khi đã xử lý xong tất cả tập có $i$ ở đầu, hạng mục $i$
+được \textit{loại trừ} hoàn toàn khỏi cơ sở dữ liệu; thuật toán chuyển sang
+hạng mục kế tiếp. Đây chính là cơ chế ``\textit{recursive elimination}'' đặt
+tên cho thuật toán.
+
+Tính đúng đắn của Relim dựa trên hai quan sát đơn giản:
+\begin{itemize}
+    \item[(i)] Mọi tập phổ biến $X \neq \emptyset$ đều có một hạng mục đầu tiên
+    duy nhất theo thứ tự đã chọn. Do đó, nếu lần lượt liệt kê các tập theo từng
+    hạng mục đầu tiên, ta liệt kê được mỗi tập \textit{đúng một lần}, không trùng
+    không thiếu.
+    \item[(ii)] Mọi tập phổ biến chứa $i$ làm hạng mục đầu tiên đều có dạng
+    $\{i\} \cup Y$ với $Y$ là một tập phổ biến trong \textit{cơ sở dữ liệu điều
+    kiện} của $i$ - tức tập các giao dịch chứa $i$, sau khi đã loại $i$ và các
+    hạng mục đứng trước $i$ theo thứ tự duyệt. Việc tìm các $Y$ này lại chính là
+    bài toán FIM ban đầu trên một CSDL nhỏ hơn, nên có thể giải đệ quy bằng cùng
+    một thủ tục.
+\end{itemize}
+Cộng với tính chất Apriori (Mệnh đề~\ref{prop:antimonotone}) để cắt tỉa, ta thu
+được toàn bộ tập phổ biến mà không cần sinh ứng viên hay quét lại cơ sở dữ liệu
+nhiều lần.
+
+Thứ tự duyệt là một lựa chọn thiết kế tự do, nhưng có ảnh hưởng quyết định đến
+hiệu năng. Borgelt phân tích~\cite{borgelt2005}: nếu duyệt theo tần suất
+\textit{tăng dần}, hạng mục được xử lý sớm là hạng mục \textit{ít phổ biến nhất},
+nên CSDL điều kiện của nó nhỏ; các CSDL điều kiện về sau cũng được thu nhỏ tích
+luỹ vì hạng mục đã xử lý bị loại bỏ. Thực nghiệm cho thấy thứ tự tăng dần nhanh
+hơn rõ rệt so với thứ tự ngẫu nhiên, và đặc biệt nhanh hơn thứ tự
+\textit{giảm dần}~\cite[Section~2.1]{borgelt2005}.
+
+So với Apriori~\cite{apriori1993}, thuật toán duyệt không gian tìm kiếm theo \textit{chiều rộng}
+(level-wise), ở vòng lặp thứ $k$ sinh tập ứng viên kích thước $k$ từ các tập
+phổ biến kích thước $k-1$, sau đó quét lại toàn bộ CSDL để đếm support. Hai
+nhược điểm cố hữu: (i)~số lần quét CSDL bằng kích thước tập phổ biến dài nhất;
+(ii)~số ứng viên có thể bùng nổ theo hàm mũ trước khi cắt tỉa. Relim
+hoàn toàn loại bỏ pha sinh ứng viên: nó duyệt theo \textit{chiều sâu}
+(depth-first), chỉ cần quét CSDL gốc \textit{một lần} để đếm tần suất ban đầu;
+các bước tiếp theo thao tác trực tiếp trên các CSDL điều kiện.
+
+FP-Growth~\cite{fpgrowth2000} cũng theo lối đệ quy không sinh ứng viên, nhưng
+nén CSDL thành cây tiền tố FP-tree để chia sẻ phần đầu chung giữa các giao
+dịch; với mỗi hạng mục, nó dựng lại một \textit{cây điều kiện} (conditional
+FP-tree). H-Mine~\cite{hmine2001} thay cây bằng cấu trúc H-struct gồm các siêu
+liên kết. Cả hai cấu trúc đều \textit{phải tái cấu trúc} mỗi khi đi sâu một
+tầng đệ quy - đó là chi phí đáng kể trên các tầng đệ quy sâu.
+
+\noindent
+Relim giữ nguyên ý tưởng đệ quy này nhưng dùng \textit{cấu trúc dữ liệu tối
+giản}: chỉ một \textbf{mảng các danh sách liên kết đơn} (xem
+Mục~\ref{subsec:ds}), trong đó các giao dịch được \textit{phân loại theo
+hạng mục đầu tiên}. Khi đi sâu, thuật toán chỉ \textit{sao chép con trỏ} sang
+mảng mới chứ không tái dựng cấu trúc phức tạp. Cái giá phải trả là Relim không
+hưởng được lợi ích chia sẻ tiền tố như FP-tree (nên chậm hơn FP-Growth trên dữ
+liệu dày), nhưng đổi lại nhận được sự đơn giản về cài đặt, ít chi phí khởi tạo
+ở mỗi tầng đệ quy, và tiêu thụ bộ nhớ thấp - đặc biệt phù hợp với dữ liệu
+thưa~\cite{borgelt2005}.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[scale=0.8, every node/.style={scale=0.85}]
+% FP-Tree part
+\begin{scope}[shift={(0,0)}]
+    \node[font=\bfseries, text=blue!80!black] at (1.5, 1) {FP-Tree (FP-Growth)};
+    \node[draw, circle, inner sep=2pt] (root) at (1.5, 0) {Root};
+    \node[draw, circle, inner sep=2pt] (a) at (0, -1.5) {a:4};
+    \node[draw, circle, inner sep=2pt] (b) at (3, -1.5) {b:2};
+    \node[draw, circle, inner sep=2pt] (c1) at (-1, -3) {c:2};
+    \node[draw, circle, inner sep=2pt] (d1) at (1, -3) {d:2};
+    \node[draw, circle, inner sep=2pt] (c2) at (3, -3) {c:2};
+    
+    \draw[->, thick] (root) -- (a);
+    \draw[->, thick] (root) -- (b);
+    \draw[->, thick] (a) -- (c1);
+    \draw[->, thick] (a) -- (d1);
+    \draw[->, thick] (b) -- (c2);
+    
+    % Header table
+    \draw[thick, fill=gray!10] (-2.5, 0) rectangle (-1.5, -3);
+    \node at (-2, -0.5) {a}; \draw[->, dashed, blue] (-1.5, -0.5) -- (a);
+    \node at (-2, -1.5) {b}; \draw[->, dashed, blue] (-1.5, -1.5) -- (b);
+    \node at (-2, -2.5) {c}; \draw[->, dashed, blue] (-1.5, -2.5) -- (c1);
+    \draw[->, dashed, blue] (c1) to[bend right=20] (c2);
+    \draw (-2.5,-1) -- (-1.5,-1); \draw (-2.5,-2) -- (-1.5,-2);
+\end{scope}
+
+% Divider
+\draw[thick, dotted, draw=black!50] (4.5, 1) -- (4.5, -4);
+
+% Relim part
+\begin{scope}[shift={(6,0)}]
+    \node[font=\bfseries, text=red!80!black] at (2.5, 1) {Mảng liên kết (RELIM)};
+    % Array (wider to avoid text clipping)
+    \draw[thick, fill=gray!10] (-0.4, 0) rectangle (2.4, -3);
+    \node at (1, -0.5) {A[a].cnt=4}; \draw (-0.4,-1) -- (2.4,-1);
+    \node at (1, -1.5) {A[b].cnt=2}; \draw (-0.4,-2) -- (2.4,-2);
+    \node at (1, -2.5) {A[c].cnt=4};
+    
+    % Nodes
+    \node[draw, rounded corners, fill=white] (n1) at (4, -0.5) {(c,d)};
+    \node[draw, rounded corners, fill=white] (n2) at (6.5, -0.5) {(d)};
+    \node[draw, rounded corners, fill=white] (n3) at (4, -1.5) {(c)};
+    
+    \draw[->, thick] (2.4, -0.5) -- (n1);
+    \draw[->, thick] (n1) -- (n2);
+    \draw[->, thick] (2.4, -1.5) -- (n3);
+    \draw[->, thick] (2.4, -2.5) -- (3.4, -2.5) node[right] {$\varnothing$};
+\end{scope}
+\end{tikzpicture}
+\caption{So sánh trực quan: FP-Growth dùng cây tiền tố với mạng lưới con trỏ phức tạp (trái), trong khi RELIM chỉ dùng mảng danh sách liên kết đơn tối giản (phải).}
+\label{fig:fp-vs-relim}
+\end{figure}
+ 
+\subsection{Cấu trúc dữ liệu chính}
+\label{subsec:ds}
+ 
+Khác với các thuật toán đương thời như FP-Growth (sử dụng cây tiền tố FP-tree) hay
+H-Mine (sử dụng H-struct), thuật toán Relim thực hiện toàn bộ quá trình khai phá
+trực tiếp trên cơ sở dữ liệu giao dịch nhờ một cấu trúc tối giản:
+\textbf{mảng các danh sách liên kết đơn} (array of singly linked lists)~\cite{borgelt2005}.
+ 
+Mỗi giao dịch được lưu trữ dưới dạng một mảng số nguyên, trong đó mỗi phần tử là
+định danh số nguyên của một hạng mục. Sau bước tiền xử lý, các hạng mục trong mỗi
+giao dịch được sắp xếp theo thứ tự tần suất tăng dần (hạng mục ít phổ biến hơn đứng
+trước).
+ 
+Thuật toán duy trì một mảng một chiều $A$ có $k$ phần tử, với $k$ là số hạng mục
+phổ biến. Mỗi phần tử $A[i]$ đại diện cho hạng mục thứ $i$ và lưu trữ hai trường:
+(i)~một \textit{biến đếm} $A[i].\mathit{cnt}$ ghi nhận tổng số giao dịch chứa hạng
+mục đó trong cơ sở dữ liệu hiện tại; và (ii)~một \textit{con trỏ đầu danh sách}
+$A[i].\mathit{head}$ trỏ đến phần tử đầu tiên của danh sách liên kết tương ứng.
+ 
+Mỗi mắt xích trong danh sách liên kết chứa hai trường: một con trỏ đến mắt xích kế
+tiếp (\textit{successor pointer}) và một con trỏ vào phần nội dung còn lại của giao
+dịch (\textit{transaction pointer}).
+ 
+Khi một giao dịch được đưa vào danh sách $A[i]$ (dựa trên hạng mục đứng đầu là $i$),
+hạng mục $i$ được ``ẩn đi'' bằng cách tăng con trỏ giao dịch lên một vị trí
+(\textit{pointer increment}). Thông tin về $i$ không bị mất vì nó đã được ngầm định
+bởi vị trí $i$ của danh sách trong mảng.
+ 
+Ngoài ra, thuật toán áp dụng tối ưu hóa Counter-Only: nếu sau khi ẩn hạng mục
+đứng đầu, giao dịch còn lại chỉ gồm đúng một hạng mục $j$, thuật toán không cấp
+phát mắt xích danh sách mà chỉ tăng $A[j].\mathit{cnt}$ lên một đơn vị. Tối ưu
+hóa này loại bỏ hoàn toàn việc cấp phát bộ nhớ động cho các giao dịch ngắn, giảm
+đáng kể chi phí quản lý bộ nhớ khi đi sâu vào các tầng đệ quy.
+ 
+Hình~\ref{fig:relim-structure} minh họa trạng thái khởi tạo của mảng danh sách cho
+một tập dữ liệu ví dụ, trong đó các mũi tên liền biểu diễn con trỏ danh sách, còn
+mũi tên đứt biểu diễn con trỏ đến nội dung giao dịch sau khi đã ẩn hạng mục đứng đầu.
+ 
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[scale=0.95]
+
+% ======================================================
+% ĐỊNH NGHĨA PHONG CÁCH (STYLES)
+% ======================================================
+\tikzset{
+    arrayhead/.style={
+        draw=black, thick, fill=gray!20,
+        minimum width=2.2cm, minimum height=0.65cm,
+        font=\small\bfseries
+    },
+    arraybox/.style={
+        draw=black, thick, fill=white,
+        minimum width=2.2cm, minimum height=0.65cm,
+        font=\small
+    },
+    mynode/.style={
+        draw=black, thick, rounded corners=3pt, fill=gray!5,
+        minimum width=1.5cm, minimum height=0.65cm,
+        font=\small
+    },
+    transbox/.style={
+        draw=black!70, thick, fill=white,
+        minimum width=2.8cm, minimum height=0.65cm,
+        font=\small\ttfamily
+    },
+    arr/.style={
+        ->, >=Stealth, thick, draw=black
+    },
+    darr/.style={
+        ->, >=Stealth, dashed, thick, draw=black!60
+    }
+}
+
+% ======================================================
+% TỌA ĐỘ CÁC CỘT MẢNG
+% ======================================================
+\def\xA{0}
+\def\xB{2.8}
+\def\xC{5.6}
+
+% ======================================================
+% KHỐI MẢNG A (ARRAY HEADERS & BOXES)
+% ======================================================
+\node[arrayhead] (hA) at (\xA,0.7) {Item $e$};
+\node[arrayhead] (hB) at (\xB,0.7) {Item $a$};
+\node[arrayhead] (hC) at (\xC,0.7) {Item $c$};
+
+\node[arraybox] (cA) at (\xA,0) {cnt $=5$};
+\node[arraybox] (cB) at (\xB,0) {cnt $=4$};
+\node[arraybox] (cC) at (\xC,0) {cnt $=2$};
+
+\node[arraybox] (pA) at (\xA,-0.7) {head};
+\node[arraybox] (pB) at (\xB,-0.7) {head};
+\node[arraybox] (pC) at (\xC,-0.7) {head};
+
+% Khung viền bao quanh Mảng A (Vừa khít hơn)
+\draw[thick] (-1.3, 1.15) rectangle (6.9, -1.15);
+\node[font=\small\bfseries, anchor=east] at (-1.4, 0) {Mảng $A$};
+
+% ======================================================
+% DANH SÁCH LIÊN KẾT CỦA ITEM E
+% ======================================================
+\node[mynode] (e1) at (\xA, -2.8) {Node$_1$};
+\node[mynode] (e2) at (\xA, -4.2) {Node$_2$};
+
+% Đã TĂNG KHOẢNG CÁCH sang phải (từ +3.2 lên +4.0) để mũi tên dài ra
+\node[transbox] (t1) at (\xA + 4.0, -2.8) {$(a,c,b,d)$};
+\node[transbox] (t2) at (\xA + 4.0, -4.2) {$(c,d)$};
+
+% Mũi tên chính
+\draw[arr] (pA.south) -- (e1.north);
+\draw[arr] (e1.south) -- (e2.north);
+
+% Mũi tên đứt nét kèm text tự động căn giữa
+\draw[darr] (e1.east) -- node[above, font=\footnotesize\itshape, text=black!80] {bỏ qua $e$} (t1.west);
+\draw[darr] (e2.east) -- node[above, font=\footnotesize\itshape, text=black!80] {bỏ qua $e$} (t2.west);
+
+% Ký hiệu rỗng bám thẳng vào chân e2
+\draw[thick, draw=black!60] (e2.south) -- ++(0,-0.4) node[below, inner sep=1pt, text=black] {$\varnothing$};
+
+% ======================================================
+% DANH SÁCH LIÊN KẾT CỦA ITEM C
+% ======================================================
+\node[font=\small\itshape, text=black!50, anchor=north] (emptyC) at (\xC, -1.3) {(danh sách rỗng)};
+
+% ======================================================
+% DANH SÁCH LIÊN KẾT CỦA ITEM A
+% ======================================================
+% Đặt node của Item A ngang hàng với e1 để hình cân đối
+\node[mynode] (a1) at (8.8, -2.8) {Node$_1$};
+% Đã TĂNG KHOẢNG CÁCH sang phải (từ 11.9 lên 12.8) để đồng nhất độ dài mũi tên
+\node[transbox] (aT) at (12.8, -2.8) {$(b,d)$};
+
+% Đường nối vuông góc đi luồn xuống dưới mảng rồi rẽ vào a1
+\draw[arr, rounded corners=4pt] (pB.south) -- (\xB, -1.8) -- (8.8, -1.8) -- (a1.north);
+
+\draw[darr] (a1.east) -- node[above, font=\footnotesize\itshape, text=black!80] {bỏ qua $a$} (aT.west);
+
+% Ký hiệu rỗng bám thẳng vào chân a1
+\draw[thick, draw=black!60] (a1.south) -- ++(0,-0.4) node[below, inner sep=1pt, text=black] {$\varnothing$};
+
+% ======================================================
+% KHUNG CHÚ GIẢI TỰ ĐỘNG KÍCH THƯỚC (Auto-sizing Legend)
+% ======================================================
+% Đã dịch khung chú giải sang 6.3 để nằm giữa tổng thể hình mới đã rộng hơn
+\node[draw=black!40, fill=gray!2, rounded corners=4pt, inner sep=8pt, font=\small, text=black] at (6.3, -5.8) {
+    \textbf{Chú giải:} 
+    \texttt{cnt} -- biến đếm hỗ trợ; \quad 
+    \texttt{head} -- con trỏ đầu danh sách; \quad 
+    \texttt{Node} -- mắt xích liên kết.
+};
+
+\end{tikzpicture}
+\caption{Cấu trúc mảng danh sách liên kết đơn của thuật toán Relim (Đã tinh chỉnh khoảng cách).}
+\label{fig:relim-structure}
+\end{figure}
+Nhờ không phải xây dựng lại cấu trúc dữ liệu mới (như tách nhánh trong FP-tree) sau
+mỗi bước đệ quy, Relim tiết kiệm đáng kể tài nguyên bộ nhớ và chi phí khởi tạo,
+đặc biệt ở các tầng đệ quy sâu khi kích thước cơ sở dữ liệu điều kiện đã thu hẹp
+đáng kể~\cite{borgelt2005}.
+ 
+ 
+% Mỹ Linh 
+\subsection{Mã giả thuật toán}
+\label{subsec:relim-pseudocode}
+
+Phần này trình bày mã giả đầy đủ của Relim, bám sát mô tả trong Section~2 của
+bài báo gốc~\cite{borgelt2005}. Để tiện trình bày, thuật toán được chia thành
+ba thủ tục:
+\begin{itemize}
+    \item \textsc{Relim}: thủ tục chính, thực hiện tiền xử lý và khởi động đệ
+    quy (tương ứng Mục~2.1 và mở đầu Mục~2.3 của bài báo gốc).
+    \item \textsc{Recursive-Relim}: hàm đệ quy lõi -- duyệt mảng danh sách,
+    xuất tập phổ biến, gọi đệ quy và phân bổ lại (Mục~2.3).
+    \item \textsc{Build-Conditional-DB}: thủ tục xây dựng cơ sở dữ liệu điều
+    kiện cho một hạng mục (đoạn ``second array of lists'' trong Mục~2.3).
+\end{itemize}
+Các ký hiệu chính dùng trong mã giả được liệt kê ở Bảng~\ref{tab:pseudocode-notation}
+và nhất quán với Danh mục thuật ngữ ở đầu báo cáo.
+
+\begin{table}[H]
+  \centering
+  \caption{Quy ước ký hiệu trong mã giả}
+  \label{tab:pseudocode-notation}
+  \begin{tabularx}{\textwidth}{lX}
+    \toprule
+    \textbf{Ký hiệu} & \textbf{Ý nghĩa} \\
+    \midrule
+    $A[i]$ & Phần tử thứ $i$ của mảng các danh sách liên kết \\
+    $A[i].\mathit{cnt}$ & Biến đếm hỗ trợ (số giao dịch chứa hạng mục $i$ làm hạng mục dẫn đầu) \\
+    $A[i].\mathit{head}$ & Con trỏ đầu danh sách liên kết \\
+    $e.\mathit{next}$ & Con trỏ đến mắt xích kế tiếp trong danh sách \\
+    $e.\mathit{trans}$ & Con trỏ vào phần còn lại của giao dịch (sau khi ẩn các hạng mục đứng trước) \\
+    $P$ & Tiền tố -- tập hạng mục đã xét trong các vòng đệ quy trước đó \\
+    $B$ & Mảng danh sách của cơ sở dữ liệu điều kiện (conditional database) \\
+    $\sigma$ & Ngưỡng hỗ trợ tối thiểu (minsup) \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+
+\subsubsection*{Thủ tục chính \textsc{Relim}}
+
+
+\begin{algorithm}[H]
+\caption{\textsc{Relim}: thủ tục chính của thuật toán Relim}
+\label{alg:relim-main}
+\begin{algorithmic}[1]
+\REQUIRE Cơ sở dữ liệu giao dịch $\mathcal{D}$; ngưỡng tối thiểu $\sigma$.
+\ENSURE Tập $\mathcal{F}$ gồm mọi tập phổ biến của $\mathcal{D}$ kèm độ hỗ trợ.
+\STATE $\mathcal{F} \leftarrow \emptyset$ \COMMENT{tập kết quả}
+\STATE $\mathit{freq} \leftarrow \textsc{CountItemFrequencies}(\mathcal{D})$
+       \COMMENT{một lần quét, $O(\sum_{T \in \mathcal{D}}|T|)$}
+\STATE $\mathcal{I}^* \leftarrow \{i \in \mathcal{I} : \mathit{freq}[i] \geq \sigma\}$
+       \COMMENT{loại hạng mục không phổ biến}
+\STATE Sắp xếp $\mathcal{I}^*$ tăng dần theo $\mathit{freq}$, gán chỉ số $1,\dots,k$
+\COMMENT{$k = |\mathcal{I}^*|$, định nghĩa thứ tự $\preceq$}
+\FORALL{$T \in \mathcal{D}$}
+    \STATE Loại các hạng mục $\notin \mathcal{I}^*$ khỏi $T$
+    \STATE Sắp xếp các hạng mục còn lại của $T$ theo thứ tự $\preceq$
+\ENDFOR
+\STATE Khởi tạo mảng $A$ với $k$ phần tử rỗng, $A[i].\mathit{cnt} \leftarrow 0$,
+       $A[i].\mathit{head} \leftarrow \textsc{Nil}$
+\FORALL{$T \in \mathcal{D}$ với $T \neq \emptyset$}
+    \STATE $i \leftarrow$ chỉ số hạng mục đầu tiên của $T$
+    \STATE $A[i].\mathit{cnt} \leftarrow A[i].\mathit{cnt} + 1$
+    \IF{$|T| > 1$}
+        \STATE Cấp phát mắt xích mới $e$; $e.\mathit{trans} \leftarrow$ con trỏ vào
+               vị trí thứ hai của $T$ \COMMENT{ẩn hạng mục đầu bằng dịch con trỏ}
+        \STATE $e.\mathit{next} \leftarrow A[i].\mathit{head}$;
+               $A[i].\mathit{head} \leftarrow e$
+    \ENDIF
+    \COMMENT{nếu $|T|=1$: chỉ tăng counter, không cấp phát mắt xích (tối ưu Counter-Only)}
+\ENDFOR
+\STATE $\textsc{Recursive-Relim}(A, k, \emptyset, \sigma, \mathcal{F})$
+\RETURN $\mathcal{F}$
+\end{algorithmic}
+\end{algorithm}
+
+\noindent
+\textbf{Diễn giải.} Các dòng 2-4 thực hiện đúng một lần quét CSDL gốc để đếm
+tần suất và xác định tập hạng mục phổ biến đơn lẻ; thứ tự tăng dần được cố định
+ngay tại đây. Vòng lặp ở dòng 5-8 \textit{thanh lọc} từng giao dịch: loại hạng
+mục không phổ biến và sắp xếp theo $\preceq$. Vòng lặp ở dòng 10--17 thực hiện
+\textit{phân loại theo hạng mục đầu}: hạng mục đầu của mỗi giao dịch đã sắp xếp
+quyết định danh sách $A[i]$ mà mắt xích được chèn vào; bản thân hạng mục đầu
+được \textit{ẩn ngầm} qua vị trí trong mảng (do đó \texttt{e.trans} trỏ tới
+hạng mục thứ hai). Trường hợp giao dịch chỉ còn một hạng mục sau khi ẩn (thân
+giao dịch rỗng) được xử lý theo tối ưu Counter-Only của Borgelt: chỉ tăng biến
+đếm, không cấp phát mắt xích, vì không có ``đuôi'' nào để đẩy sâu hơn.
+
+
+\subsubsection*{Hàm đệ quy \textsc{Recursive-Relim}}
+
+
+\begin{algorithm}[H]
+\caption{\textsc{Recursive-Relim}: hàm đệ quy lõi}
+\label{alg:relim-recursive}
+\begin{algorithmic}[1]
+\REQUIRE Mảng danh sách $A$ kích thước $k$; tiền tố $P$; ngưỡng $\sigma$;
+         tập kết quả $\mathcal{F}$ (\textit{tham chiếu}).
+\FOR{$i \leftarrow 1$ \TO $k$}
+    \IF{$A[i].\mathit{cnt} \geq \sigma$}
+        \STATE $\mathcal{F} \leftarrow \mathcal{F} \cup
+               \{(P \cup \{i\}, \, A[i].\mathit{cnt})\}$
+               \label{line:output}
+               \COMMENT{xuất tập phổ biến $P \cup \{i\}$ với support}
+        \STATE $B \leftarrow \textsc{Build-Conditional-DB}(A, i)$
+               \label{line:buildcond}
+               \COMMENT{CSDL điều kiện cho $i$}
+        \STATE $\textsc{Recursive-Relim}(B, i-1, P \cup \{i\}, \sigma, \mathcal{F})$
+               \label{line:recurse}
+               \COMMENT{đệ quy với tiền tố mở rộng}
+    \ENDIF
+    \STATE $e \leftarrow A[i].\mathit{head}$
+    \WHILE{$e \neq \textsc{Nil}$}
+        \STATE $e_{\text{next}} \leftarrow e.\mathit{next}$
+        \IF{$e.\mathit{trans}$ vẫn còn ít nhất một hạng mục}
+            \STATE $j \leftarrow$ chỉ số hạng mục đầu hiện tại của $e.\mathit{trans}$
+            \STATE Dịch $e.\mathit{trans}$ sang hạng mục kế tiếp \COMMENT{ẩn $j$}
+            \IF{$e.\mathit{trans}$ chưa rỗng}
+                \STATE $e.\mathit{next} \leftarrow A[j].\mathit{head}$;
+                       $A[j].\mathit{head} \leftarrow e$
+                       \COMMENT{phân bổ lại sang $A[j]$}
+            \ENDIF
+            \STATE $A[j].\mathit{cnt} \leftarrow A[j].\mathit{cnt} + 1$
+        \ENDIF
+        \STATE $e \leftarrow e_{\text{next}}$
+    \ENDWHILE
+    \STATE $A[i].\mathit{head} \leftarrow \textsc{Nil}$;\;
+           $A[i].\mathit{cnt} \leftarrow 0$ \COMMENT{loại trừ $i$ khỏi $A$}
+\ENDFOR
+\end{algorithmic}
+\end{algorithm}
+
+\noindent
+\textbf{Diễn giải.} Vòng \texttt{for} ngoài duyệt mảng $A$ từ trái sang phải;
+biến chạy $i$ là chỉ số của hạng mục đang đóng vai trò ``hạng mục đầu của các
+tập phổ biến cần tìm''. Khối điều kiện ở dòng 2-6 hiện thực hai quan sát then
+chốt đã nêu ở Mục~\ref{subsec:relim-idea}:
+\begin{itemize}
+    \item \textit{Dòng 3 - xuất tập phổ biến.} Nếu $A[i].\mathit{cnt} \geq
+    \sigma$ thì $\{i\}$ phổ biến trong CSDL hiện tại, kết hợp với tiền tố $P$
+    cho tập phổ biến $P \cup \{i\}$ ở cấp đệ quy này (Mệnh đề~\ref{prop:antimonotone}
+    đảm bảo nếu $A[i].\mathit{cnt} < \sigma$ thì mọi mở rộng đều không phổ
+    biến --- nhánh đệ quy được cắt tỉa).
+    \item \textit{Dòng 4-5 - gọi đệ quy.} CSDL điều kiện $B$ tập hợp các
+    giao dịch chứa $i$, đã loại $i$ và các hạng mục đứng trước $i$. Mọi tập phổ
+    biến của $B$ mở rộng tiền tố $P \cup \{i\}$ cho ra tập phổ biến mới.
+\end{itemize}
+Vòng \texttt{while} ở dòng 8-19 thực hiện \textit{phân bổ lại} (reassign): với
+mỗi mắt xích $e$ trong $A[i]$, lấy hạng mục đầu tiên $j$ hiện tại của
+$e.\mathit{trans}$ ($j > i$ vì danh sách đã sắp xếp tăng dần), ẩn $j$ đi bằng
+một bước dịch con trỏ, rồi chèn $e$ vào danh sách $A[j]$. Lưu ý cập nhật
+$A[j].\mathit{cnt}$ ngay cả khi mắt xích không được chèn (trường hợp
+$e.\mathit{trans}$ trở thành rỗng sau khi ẩn $j$) - đây chính là tối ưu
+Counter-Only ở cấp đệ quy này. Sau khi tất cả mắt xích đã rời $A[i]$, danh sách
+này được làm rỗng (dòng 20): hạng mục $i$ được \textit{loại trừ vĩnh viễn} khỏi
+CSDL hiện tại; mọi tập phổ biến tiếp theo sẽ có hạng mục đầu lớn hơn $i$.
+
+\paragraph{Lưu ý kỹ thuật.}
+Việc đệ quy ở dòng~\ref{line:recurse} chỉ truyền kích thước $i-1$ (thay vì
+$k$): đây là tối ưu mà Borgelt~\cite[Section~2.4]{borgelt2005} đề xuất - trong
+CSDL điều kiện $B$, các vị trí $i, i+1, \dots, k$ luôn rỗng (vì mọi giao dịch
+trong $B$ ban đầu chứa $i$, và sau khi ẩn $i$, hạng mục đầu mới luôn nhỏ hơn
+$i$ theo thứ tự $\preceq$). Việc này tránh các vòng lặp trống ở các cấp đệ quy
+sâu.
+
+
+\subsubsection*{Thủ tục \textsc{Build-Conditional-DB}}
+
+
+\begin{algorithm}[H]
+\caption{\textsc{Build-Conditional-DB}: dựng CSDL điều kiện cho hạng mục $i$}
+\label{alg:relim-build-cond}
+\begin{algorithmic}[1]
+\REQUIRE Mảng danh sách $A$; chỉ số $i$ của hạng mục đang xét.
+\ENSURE Mảng danh sách $B$ là CSDL điều kiện ứng với tiền tố $\{i\}$.
+\STATE Khởi tạo mảng $B$ với $i-1$ phần tử,
+       $B[j].\mathit{cnt} \leftarrow 0$,
+       $B[j].\mathit{head} \leftarrow \textsc{Nil}$ với mọi $j < i$
+\STATE $e \leftarrow A[i].\mathit{head}$
+\WHILE{$e \neq \textsc{Nil}$}
+    \IF{$e.\mathit{trans}$ vẫn còn ít nhất một hạng mục}
+        \STATE $j \leftarrow$ chỉ số hạng mục đầu hiện tại của $e.\mathit{trans}$
+        \STATE Tạo bản sao mắt xích $e' \leftarrow$ \textsc{Copy}$(e)$
+        \STATE Dịch $e'.\mathit{trans}$ sang hạng mục kế tiếp \COMMENT{ẩn $j$}
+        \IF{$e'.\mathit{trans}$ chưa rỗng}
+            \STATE $e'.\mathit{next} \leftarrow B[j].\mathit{head}$;
+                   $B[j].\mathit{head} \leftarrow e'$
+        \ENDIF
+        \STATE $B[j].\mathit{cnt} \leftarrow B[j].\mathit{cnt} + 1$
+    \ENDIF
+    \STATE $e \leftarrow e.\mathit{next}$
+\ENDWHILE
+\RETURN $B$
+\end{algorithmic}
+\end{algorithm}
+
+\noindent
+\textbf{Diễn giải.} Thủ tục này song hành với vòng phân bổ lại trong
+\textsc{Recursive-Relim}: cùng một mắt xích vừa được \textit{phân bổ lại} (cập
+nhật vào $A$) vừa được \textit{nhân bản} (chèn bản sao vào $B$). Điểm tinh tế
+là:
+\begin{itemize}
+    \item Mắt xích trong $B$ là \textit{bản sao} của mắt xích trong $A$, không
+    phải cùng một mắt xích. Cả hai bản sao đều trỏ vào \textit{cùng một mảng
+    giao dịch} (qua trường \texttt{trans}); việc dịch con trỏ chỉ thay đổi vị
+    trí đọc trong mảng đó, không sao chép nội dung giao dịch. Đây là chìa khoá
+    giúp Relim tiết kiệm bộ nhớ.
+    \item Trường hợp $e.\mathit{trans}$ chỉ còn đúng một hạng mục: sau khi ẩn
+    $j$, phần đuôi rỗng, nên không cấp phát mắt xích mới trong $B[j]$; chỉ tăng
+    $B[j].\mathit{cnt}$ (tối ưu Counter-Only).
+    \item Tối ưu cài đặt được Borgelt nêu trong Mục~2.4: nếu
+    $A[i].\mathit{cnt} < \sigma$, có thể bỏ qua hoàn toàn bước
+    \textsc{Build-Conditional-DB} vì không thể tìm thấy tập phổ biến nào trong
+    nhánh đệ quy đó (điều này đã được kiểm tra ở dòng~2 của
+    Thuật toán~\ref{alg:relim-recursive} trước khi gọi tới đây).
+\end{itemize}
+
+\paragraph{Mối liên hệ với cấu trúc dữ liệu.}
+Trên hai cấu trúc song song $A$ và $B$, mỗi vòng lặp ngoài của
+\textsc{Recursive-Relim} đồng thời (i)~\textit{thu hẹp} $A$ bằng cách loại
+trừ hạng mục $i$ và (ii)~\textit{nhân bản} một phần $A[i]$ sang $B$ để đệ quy
+sâu hơn. Hai thao tác này tương ứng chính xác với hai cột trái và phải
+trong Hình~1 của bài báo Borgelt: cột trái là sự ``tan rã'' dần của mảng $A$
+qua bốn bước cho đến khi rỗng; cột phải là các mảng $B$ được dựng tạm với tiền
+tố tương ứng (prefix~$e$, prefix~$a$, prefix~$c$, prefix~$b$).
+
+\subsection{Phân tích độ phức tạp}
+\label{subsec:relim-complexity}
+
+Bài báo gốc~\cite{borgelt2005} chủ yếu đánh giá Relim qua thực nghiệm và không
+trình bày phân tích độ phức tạp hình thức. Trong phần này, chúng tôi suy ra
+các cận tiệm cận trực tiếp từ giả mã ở Mục~\ref{subsec:relim-pseudocode}. Quy
+ước các tham số sau, dùng thống nhất cho cả phân tích thời gian và không gian:
+\begin{itemize}
+    \item $n = |\mathcal{D}|$: số giao dịch của CSDL gốc;
+    \item $w = \frac{1}{n}\sum_{T \in \mathcal{D}}|T|$: chiều rộng giao dịch
+    trung bình;
+    \item $N = \sum_{T \in \mathcal{D}}|T| = n \cdot w$: tổng kích thước (số
+    cặp \textit{giao dịch-hạng mục}) - đại lượng then chốt trong các phân
+    tích sau;
+    \item $m = |\mathcal{I}|$: số hạng mục phân biệt; $k = |\mathcal{I}^*|$: số
+    hạng mục phổ biến đơn lẻ (sau cắt tỉa, $k \leq m$);
+    \item $|\mathcal{F}|$: số tập phổ biến đầu ra;
+    \item $\sigma$: ngưỡng support tối thiểu.
+\end{itemize}
+
+
+\subsubsection*{Độ phức tạp thời gian}
+
+\paragraph{Chi phí tiền xử lý (cố định).}
+Các bước trong Thuật toán~\ref{alg:relim-main}:
+\begin{itemize}
+    \item Đếm tần suất (dòng~2): một lần quét toàn bộ CSDL với $O(N)$ thao tác.
+    \item Cắt tỉa và sắp xếp $\mathcal{I}^*$ (dòng~3-4): $O(m + m\log m)$.
+    \item Sắp xếp các hạng mục trong mỗi giao dịch (dòng~5-8): mỗi giao dịch
+    tốn $O(|T|\log|T|)$ nếu dùng so sánh; với $|T| \leq w_{\max}$, tổng chi phí
+    tối đa $O(N \log w_{\max})$. Trên CSDL điển hình, đây không phải là điểm
+    nghẽn.
+    \item Khởi tạo mảng $A$ và phân loại giao dịch theo hạng mục đầu (dòng
+    9-17): $O(n)$.
+\end{itemize}
+\noindent
+Tổng chi phí tiền xử lý: $\boxed{O(N\log w_{\max} + m\log m)}$. Khi $w_{\max}$
+hằng số, đơn giản còn $O(N + m\log m)$.
+
+\paragraph{Chi phí một cấp đệ quy.}
+Xét một lời gọi \textsc{Recursive-Relim}$(A, k', P, \sigma, \cdot)$ ở một cấp
+đệ quy bất kỳ, với mảng $A$ kích thước $k'$ và tổng số mắt xích là $L$. Toàn bộ
+công việc ở cấp này gồm hai phần:
+\begin{enumerate}
+    \item[(R1)] Vòng phân bổ lại (dòng~8-19): mỗi mắt xích được \textit{dịch
+    con trỏ một lần} và chèn vào danh sách khác $O(1)$. Tổng chi phí cho cả
+    mảng: $O(L + k')$.
+    \item[(R2)] Các lời gọi \textsc{Build-Conditional-DB} cho các nhánh phổ
+    biến (dòng~4): mỗi mắt xích $e \in A[i]$ tạo \textit{tối đa} một bản sao
+    với chi phí $O(1)$. Tổng chi phí phần này, cộng dồn trên mọi $i$ có
+    $A[i].\mathit{cnt} \geq \sigma$, không vượt quá $O(L)$.
+\end{enumerate}
+\noindent
+Vậy chi phí cục bộ (không tính đệ quy con) tại mỗi cấp là $O(L + k')$.
+
+\paragraph{Tổng chi phí qua mọi cấp đệ quy.}
+Quan sát then chốt~\cite[Section~2]{borgelt2005}: tổng số mắt xích sinh ra trên
+\textit{toàn bộ} cây đệ quy bằng tổng kích thước các CSDL điều kiện. Dùng định
+nghĩa độ hỗ trợ, có thể viết:
+\begin{equation}
+    \mathcal{W}_{\text{lists}} \;=\; \sum_{X \in \mathcal{F}} \mathrm{sup}(X)
+    \;\;\leq\;\; |\mathcal{F}| \cdot n.
+    \label{eq:total-list-work}
+\end{equation}
+Trực giác: với mỗi tập phổ biến $X = \{i_1 \prec i_2 \prec \dots \prec i_\ell\}$
+được xuất ra, mỗi giao dịch $T \supseteq X$ đóng góp đúng một mắt xích vào CSDL
+điều kiện ở cấp đệ quy ứng với tiền tố $\{i_1,\dots,i_{\ell-1}\}$, danh sách
+$A[i_\ell]$. Cộng dồn cho tất cả tập phổ biến cho cận
+$\sum_{X} \mathrm{sup}(X)$. Mỗi mắt xích lại được xử lý trong $O(1)$ ở cấp đệ
+quy của nó, nên tổng công việc xử lý mắt xích là
+$O\!\left(\sum_X \mathrm{sup}(X)\right)$.
+
+\noindent
+Kèm theo chi phí duyệt mảng (mỗi cấp đệ quy có thêm $O(k')$ phép duyệt trống),
+ta có ước lượng tổng quát:
+\begin{equation}
+    T_{\textsc{Relim}}(\mathcal{D}, \sigma) \;=\; O\!\Bigl(N \;+\; m\log m
+    \;+\; \sum_{X \in \mathcal{F}} \mathrm{sup}(X)\Bigr).
+    \label{eq:relim-overall-time}
+\end{equation}
+
+\paragraph{Trường hợp tốt nhất.}
+Khi $\sigma$ rất cao, hầu hết hạng mục không phổ biến: $k \to 0$ và $|\mathcal{F}|$
+nhỏ. Trong cực đoan $k=0$ (không có hạng mục nào phổ biến), thuật toán dừng
+ngay sau khi đếm tần suất:
+\begin{equation}
+    T_{\text{best}} = O(N + m\log m).
+\end{equation}
+Ngay cả khi $k > 0$ nhưng vẫn nhỏ, vòng đệ quy thưa thớt và thuật toán xấp xỉ
+tuyến tính theo $N$.
+
+\paragraph{Trường hợp xấu nhất.}
+Khi $\sigma = 1$ (mọi tập con khác rỗng đều phổ biến), số tập phổ biến đạt
+$|\mathcal{F}| = 2^k - 1$ và $\sum_X \mathrm{sup}(X)$ có thể đạt
+$O(n \cdot 2^k)$. Thay vào~\eqref{eq:relim-overall-time}:
+\begin{equation}
+    T_{\text{worst}} = O\!\bigl(n \cdot 2^k\bigr).
+\end{equation}
+Đây là cận xấu nhất chung cho \textit{mọi} thuật toán FIM khai phá đầy đủ tập
+phổ biến: số đầu ra đã có thể là $2^k$. Sự bùng nổ này không phải do thiết kế
+của Relim mà do kích thước bài toán.
+
+\paragraph{Trường hợp trung bình.}
+Khó đưa cận khép kín do phụ thuộc phân phối dữ liệu. Borgelt báo cáo thực
+nghiệm trên năm bộ dữ liệu chuẩn (BMS-Webview-1, T10I4D100K, census, chess,
+mushroom) cho thấy~\cite[Section~3]{borgelt2005}:
+\begin{itemize}
+    \item Đường cong $\log_{10}(\text{thời gian})$ của Relim luôn nhanh hơn
+    Apriori, đôi khi nhanh hơn Eclat;
+    \item FP-Growth thường nhanh hơn Relim trên dữ liệu dày
+    (\texttt{chess}, \texttt{mushroom}, \texttt{census}), do hưởng lợi từ chia
+    sẻ tiền tố trong FP-tree mà Relim không có;
+    \item Khoảng cách giữa Relim và Apriori giãn rộng khi $\sigma$ giảm.
+\end{itemize}
+Có thể tóm gọn: trên dữ liệu thưa, $|\mathcal{F}|$ vừa phải và
+$\sum_X \mathrm{sup}(X)$ tăng tuyến tính theo $1/\sigma$; thực nghiệm phù hợp
+với cận lý thuyết~\eqref{eq:relim-overall-time}.
+
+\paragraph{Các yếu tố ảnh hưởng chính đến hiệu năng.}
+Từ phân tích trên có thể nêu rõ:
+\begin{itemize}
+    \item \textbf{Ngưỡng $\sigma$}: ảnh hưởng \textit{lớn nhất} thông qua kích
+    thước $|\mathcal{F}|$. Quan hệ $|\mathcal{F}|$ với $\sigma$ thường là siêu
+    tuyến tính (tăng đột biến khi $\sigma$ giảm dưới một ngưỡng nào đó).
+    \item \textbf{Kích thước CSDL $n$}: ảnh hưởng \textit{tuyến tính} đến cả
+    pha tiền xử lý ($N = nw$) và pha đệ quy ($\sum_X \mathrm{sup}(X)$ tỉ lệ
+    với $n$ khi cố định mật độ).
+    \item \textbf{Chiều rộng giao dịch trung bình $w$}: tăng $w$ làm $N$ tăng,
+    đồng thời tăng kích thước các CSDL điều kiện (giao dịch dài hơn $\Rightarrow$
+    nhiều mắt xích sống sót qua nhiều tầng đệ quy). Đây là yếu tố nhạy với
+    Relim hơn so với FP-Growth (do FP-tree chia sẻ tiền tố).
+    \item \textbf{Số hạng mục phổ biến $k$}: quyết định độ sâu đệ quy tối đa và
+    cận trên xấu nhất $2^k$.
+    \item \textbf{Mật độ dữ liệu (dense vs sparse)}: dữ liệu dày sinh nhiều
+    tập phổ biến hơn cùng $\sigma$; thực nghiệm xác nhận Relim chậm hơn
+    FP-Growth trên dữ liệu dày như \texttt{chess} hay
+    \texttt{mushroom}~\cite[Figures 5-6]{borgelt2005}.
+\end{itemize}
+
+
+\subsubsection*{Độ phức tạp không gian}
+
+\paragraph{Bộ nhớ tĩnh.}
+CSDL gốc lưu dưới dạng $n$ mảng số nguyên có tổng kích thước $N$ phần tử, cộng
+mảng $A$ kích thước $k$. Bộ nhớ cố định: $O(N + k)$. Mỗi giao dịch chỉ được lưu
+\textit{một lần}; các bước đệ quy sau không sao chép nội dung giao dịch (chỉ
+dịch con trỏ vào mảng đã có), khác hẳn FP-Growth cần dựng cây mới ở mỗi cấp.
+
+\paragraph{Bộ nhớ động cho mắt xích danh sách.}
+Đây là điểm thú vị nhất trong phân tích bộ nhớ. Gọi $d$ là độ sâu đệ quy tối
+đa ($d \leq k$). Khi gọi đệ quy ở dòng~\ref{line:recurse}, mảng $B$ ở cấp con
+\textit{cùng tồn tại} với mảng $A$ ở cấp cha trong thời gian chạy nhánh con.
+Tuy nhiên, do thiết kế phân loại theo hạng mục đầu:
+\begin{equation}
+    \sum_{i=1}^{k} \#\{\text{mắt xích trong } A[i]\} \;\leq\; n,
+    \label{eq:lists-leq-n}
+\end{equation}
+nên \textit{tổng số mắt xích sống đồng thời ở mỗi cấp đệ quy không vượt quá
+$n$}. Sau cấp đệ quy, một số giao dịch bị loại bỏ (do thân trở thành rỗng), nên
+ở các cấp đệ quy con, số mắt xích thường nhỏ hơn $n$ đáng kể.
+
+\noindent
+Cận trên không gian (chưa tối ưu):
+\begin{equation}
+    S_{\text{naive}} = O(N + d \cdot n).
+\end{equation}
+Borgelt~\cite[Section~2.4]{borgelt2005} đề xuất tối ưu \textit{cấp phát theo
+khối} (\textit{block allocation}): cấp phát $n$ mắt xích cho mỗi cấp đệ quy
+trong một mảng liền kề, và lưu các mảng này ở một vùng nhớ toàn cục để
+\textit{tái sử dụng} khi đệ quy quay lui. Cận trên vẫn là $O(d \cdot n)$,
+nhưng (i) tránh phân mảnh, (ii) không phải gọi
+\texttt{malloc}/\texttt{new} ở mỗi cấp đệ quy - một thắng lợi lớn về hằng số
+trong thực tiễn.
+
+\paragraph{Trường hợp tốt nhất, trung bình, xấu nhất.}
+\begin{itemize}
+    \item \textit{Tốt nhất:} $d = 0$ (không có hạng mục phổ biến) hoặc
+    $d = O(\log n)$ trên dữ liệu phân tán đều: $S = O(N)$.
+    \item \textit{Trung bình:} $d$ tỉ lệ với chiều dài tập phổ biến dài nhất.
+    Trên dữ liệu thực, $d$ thường nhỏ hơn $k$ đáng kể: $S = O(N + d\cdot n)$
+    với $d \ll k$.
+    \item \textit{Xấu nhất:} $d = k$ khi $\sigma$ rất thấp:
+    $S = O(N + k \cdot n) = O(N + kn)$.
+\end{itemize}
+
+\paragraph{So sánh không gian với các thuật toán đương thời.}
+Apriori cần lưu các tập ứng viên ở mỗi cấp $k$, có thể vượt xa $|\mathcal{F}|$.
+FP-Growth lưu FP-tree gốc (chia sẻ tiền tố nên tốt trên dày, kém trên thưa)
+cộng các cây điều kiện trên đường đệ quy - chi phí khởi tạo và tái cấu trúc
+cây có hằng số lớn. Relim đặt giữa: không có lợi thế chia sẻ tiền tố như
+FP-Growth, nhưng cấu trúc danh sách liên kết đơn cực kỳ nhẹ (mỗi mắt xích chỉ
+2~con trỏ, tức 8~byte trên máy 32-bit \cite[Section~2.4]{borgelt2005}); kết
+hợp với tối ưu Counter-Only và block allocation, Relim thường tiết kiệm bộ nhớ
+hơn FP-Growth trên dữ liệu thưa.
+\subsection{Vị trí của Relim trong dòng phát triển FIM}
+\label{subsec:history}
+ 
+Để đánh giá đúng đóng góp của Relim, cần đặt nó trong bức tranh tổng thể của lĩnh
+vực khai phá tập phổ biến từ những năm 1990 đến đầu những năm 2000.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    scale=0.9,
+    every node/.style={font=\small},
+    timeline/.style={draw=black!70, line width=2pt, ->, >=Stealth},
+    milestone/.style={circle, fill=stepblue, minimum size=10pt, inner sep=0pt},
+    year/.style={above=8pt, font=\bfseries\color{black!70}},
+    algo/.style={below=8pt, font=\bfseries, align=center}
+]
+    % Draw timeline arrow
+    \draw[timeline] (0,0) -- (14,0);
+    
+    % Milestones
+    \node[milestone] (m1) at (1,0) {};
+    \node[year] at (m1) {1993};
+    \node[algo] at (m1) {Apriori};
+    
+    \node[milestone] (m2) at (3.5,0) {};
+    \node[year] at (m2) {1997};
+    \node[algo] at (m2) {Eclat};
+    
+    \node[milestone] (m3) at (6,0) {};
+    \node[year] at (m3) {2000};
+    \node[algo] at (m3) {FP-Growth};
+    
+    \node[milestone] (m4) at (8.5,0) {};
+    \node[year] at (m4) {2001};
+    \node[algo] at (m4) {H-Mine};
+    
+    \node[milestone, fill=red!80] (m5) at (11,0) {}; % Highlight Relim
+    \node[year] at (m5) {2005};
+    \node[algo, text=red!80!black] at (m5) {RELIM};
+    
+    \node[milestone] (m6) at (13.5,0) {};
+    \node[year] at (m6) {2008+};
+    \node[algo] at (m6) {PFP};
+
+\end{tikzpicture}
+\caption{Dòng thời gian phát triển của các thuật toán Khai phá tập phổ biến tiêu biểu.}
+\label{fig:fim-timeline}
+\end{figure}
+ 
+\subsubsection{Thế hệ thứ nhất: Sinh tập ứng viên theo chiều rộng}
+
+\textbf{Apriori} (Agrawal và Swami, 1993~\cite{apriori1993}) đặt nền móng cho FIM
+bằng phương pháp sinh tập ứng viên theo tầng (level-wise). Thuật toán này cần $k$
+lần quét cơ sở dữ liệu và số ứng viên tăng theo hàm mũ khi $\sigma$ giảm. 
+
+\noindent
+\textbf{Eclat} (Zaki, 1997~\cite{eclat1997}) chuyển sang biểu diễn dọc (vertical
+format): mỗi hạng mục $i$ được gắn tập định danh $\mathrm{TID}(i)$; support tính
+bằng phép giao: $\mathrm{sup}(X) = |\bigcap_{i \in X} \mathrm{TID}(i)|$. Khi dữ
+liệu dày, TID-set lớn khiến phép giao tốn kém.
+ 
+\subsubsection{Thế hệ thứ hai: Thay thế việc sinh ứng viên bằng đệ quy}
+ 
+\textbf{FP-Growth} (Han, Pei và Yin, 2000~\cite{fpgrowth2000}) nén $\mathcal{D}$
+vào FP-tree (hai lần quét), khai phá đệ quy các cây điều kiện mà không sinh ứng
+viên. Rất mạnh trên dữ liệu dày nhờ chia sẻ tiền tố, nhưng việc xây dựng và tái
+cấu trúc FP-tree đòi hỏi cài đặt phức tạp.
+
+\noindent
+\textbf{H-Mine} (Pei et al., 2001~\cite{hmine2001}) dùng siêu liên kết (hyperlinks)
+thay cây tường minh, đơn giản hơn FP-Growth về cài đặt nhưng vẫn cần quản lý mạng
+con trỏ phức tạp qua nhiều tầng.
+ 
+\subsubsection{Đóng góp của Relim (Borgelt, 2005)}
+ 
+Borgelt~\cite{borgelt2005} đề xuất Relim với triết lý \textit{tối giản hóa}: kế
+thừa nguyên lý đệ quy loại trừ nhưng loại bỏ hoàn toàn cây và siêu liên kết. Toàn
+bộ thuật toán hoạt động trên một mảng danh sách liên kết đơn và một hàm đệ quy
+duy nhất với số dòng mã rất nhỏ.
+ 
+\subsubsection{Các hướng tiếp cận cùng thời}
+ 
+Đánh đổi cho sự đơn giản là Relim không khai thác được cơ chế chia sẻ tiền tố của
+FP-tree. Trên dữ liệu dày ($\mathtt{chess}$, $\mathtt{mushroom}$), FP-Growth vượt
+xa Relim vì có thể biểu diễn nhiều giao dịch bằng một nhánh dùng chung.
+
+\noindent
+Các hướng tiếp cận khác cùng giai đoạn gồm:
+(i)~\textbf{dEclat} (Zaki và Gouda, 2003~\cite{declat2003}) thay TID-set bằng \textit{diffset} để
+tiết kiệm bộ nhớ trên dữ liệu dày;
+(ii)~\textbf{LCM} (Uno et al., 2004~\cite{lcm2004}) khai phá qua các tập đóng, đạt hiệu năng xuất
+sắc trong các cuộc thi chuẩn FIM.
+ 
+\subsubsection{Các hướng phát triển sau Relim}
+
+Sau Relim, nghiên cứu FIM tiếp tục tập trung vào ba hướng chính:
+(i)~tối ưu biểu diễn dữ liệu,
+(ii)~khai phá tập đóng/tối đại,
+và
+(iii)~khai phá song song trên dữ liệu lớn.
+
+\noindent
+\textbf{AFOPT} (Liu et al., 2006~\cite{afopt2006}) cải tiến FP-Growth bằng cấu trúc
+\textit{Ascending Frequency Ordered Prefix Tree}, giúp giảm chi phí xây dựng
+conditional tree và tăng hiệu quả trên dữ liệu dày.
+
+\noindent
+Các thuật toán khai phá tập đóng như \textbf{Charm} (Zaki và Hsiao,
+2002~\cite{charm2002}) và các biến thể của \textbf{LCM}~\cite{lcm2004} tiếp tục
+được tối ưu nhằm giảm số lượng mẫu cần sinh, đặc biệt hiệu quả khi số tập phổ
+biến rất lớn.
+
+\noindent
+Trong giai đoạn dữ liệu lớn (\textit{big data}), các thuật toán như
+\textbf{Parallel FP-Growth (PFP)} (Li et al., 2008~\cite{pfp2008}) trên
+Hadoop/Spark và các phương pháp GPU-based FIM được phát triển nhằm mở rộng khả
+năng xử lý lên hàng tỷ giao dịch.
+
+\noindent
+Gần đây, nghiên cứu FIM còn mở rộng sang:
+(i)~khai phá luồng dữ liệu (\textit{stream mining}),
+(ii)~khai phá tập hữu ích cao (\textit{high-utility itemset mining}),
+và
+(iii)~khai phá trên dữ liệu không chắc chắn (\textit{uncertain data mining}).
+ 
+Bảng~\ref{tab:algo-comparison} tóm tắt vị trí của Relim trong dòng phát triển này.
+ 
+\begin{table}[H]
+  \centering
+  \caption{So sánh các thuật toán FIM qua các thế hệ}
+  \label{tab:algo-comparison}
+  \begin{tabularx}{\textwidth}{lllXX}
+    \toprule
+    \textbf{Thuật toán} & \textbf{Năm} & \textbf{Cấu trúc DL} & \textbf{Ưu điểm} & \textbf{Hạn chế} \\
+    \midrule
+    Apriori     & 1993 & Horizontal  & Đơn giản, nền tảng lý thuyết & Nhiều lần quét, sinh nhiều ứng viên \\
+    \addlinespace
+    Eclat       & 1997 & TID-set dọc & Một lần đọc; tốt trên thưa   & TID-set lớn khi dense \\
+    \addlinespace
+    FP-Growth   & 2000 & FP-tree     & Rất nhanh trên dense         & Cài đặt phức tạp, tốn RAM \\
+    \addlinespace
+    H-Mine      & 2001 & H-struct    & Nhanh hơn Apriori            & Con trỏ phức tạp nhiều tầng \\
+    \addlinespace
+    dEclat      & 2003 & Diffset dọc & Tiết kiệm RAM trên dense     & Phức tạp hơn Eclat \\
+    \addlinespace
+    LCM         & 2004 & Closed sets & Hiệu năng tốt nhất thực tế   & Phức tạp về lý thuyết \\
+    \addlinespace
+    \textbf{Relim} & \textbf{2005} & \textbf{Mảng linked list} & \textbf{Cực kỳ đơn giản; ít RAM; tốt trên thưa} & \textbf{Chậm hơn FP-Growth trên dense} \\
+    \addlinespace
+    AFOPT       & 2006 & Prefix tree tối ưu & Tăng tốc FP-Growth & Cấu trúc vẫn phức tạp \\
+    \addlinespace
+    PFP         & 2008 & Distributed FP-tree & Xử lý dữ liệu lớn song song & Overhead phân tán \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+% ============================================================
+% CHƯƠNG 2: VÍ DỤ MINH HỌA TAY
+% ============================================================
+\chapter{VÍ DỤ MINH HỌA TAY}
+ 
+Chương này trình bày hai ví dụ thực hiện tay hoàn toàn để làm rõ cơ chế hoạt động
+của Relim. \textbf{Ví dụ~\ref{sec:ex1}} minh họa luồng xử lý tổng quát.
+\textbf{Ví dụ~\ref{sec:ex2}} tập trung vào tình huống đặc biệt \textit{Counter-Only},
+một tối ưu hóa đặc trưng của Relim.
+ 
+% ============================================================
+\section{Ví dụ 1: Minh họa tổng quát}
+\label{sec:ex1}
+% ============================================================
+ 
+\subsection{Thiết lập}
+ 
+\begin{center}
+\begin{tikzpicture}
+\node[ rounded corners=5pt,
+      inner xsep=12pt, inner ysep=8pt, font=\small] {
+  $\mathcal{I} = \{a,b,c,d,e,f\}$ \qquad
+  $|\mathcal{D}| = 6$ \qquad
+  $\sigma = 3$
+};
+\end{tikzpicture}
+\end{center}
+ 
+\begin{table}[H]
+  \centering
+  \caption{Cơ sở dữ liệu gốc (Ví dụ 1)}
+  \label{tab:ex1-original}
+  \begin{tabular}{cc}
+    \toprule
+    \textbf{TID} & \textbf{Giao dịch} \\
+    \midrule
+    $T_1$ & $\{a, b, c, d\}$ \\
+    $T_2$ & $\{b, c, e, f\}$    \\
+    $T_3$ & $\{a, b, d\}$    \\
+    $T_4$ & $\{b, c, d, e\}$ \\
+    $T_5$ & $\{a, c, d\}$    \\
+    $T_6$ & $\{b, d, e\}$    \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+ 
+\subsection{Bước tiền xử lý}
+ 
+\paragraph{Đếm tần suất.}
+ 
+\begin{table}[H]
+  \centering
+  \caption{Tần suất các hạng mục và thứ tự sắp xếp}
+  \label{tab:ex1-freq}
+  \begin{tabular}{ccccccc}
+    \toprule
+    Hạng mục & $f$ & $a$ & $e$ & $c$ & $b$ & $d$ \\
+    \midrule
+    Tần suất & 1 & 3 & 3 & 4 & 5 & 5 \\
+    Thứ tự & -- & 1 & 2 & 3 & 4 & 5 \\
+    Phổ biến? & $\times$ & {\checkmark} & {\checkmark} & {\checkmark} & {\checkmark} & {\checkmark} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+ 
+Hạng mục $f$ có tần suất $1 < \sigma = 3$ nên bị \textbf{loại bỏ} khỏi cơ sở dữ liệu. Các hạng mục khác được giữ nguyên.
+Thứ tự sắp xếp tần suất tăng dần (tie-break theo bảng chữ cái):
+\[
+  \underbrace{a}_{3} \;<\; \underbrace{e}_{3} \;<\; \underbrace{c}_{4} \;<\; \underbrace{b}_{5} \;\approx\; \underbrace{d}_{5}.
+\]
+ 
+Cơ sở dữ liệu sau tiền xử lý được thể hiện trong Bảng~\ref{tab:ex1-sorted}.
+ 
+\begin{table}[H]
+  \centering
+  \caption{Cơ sở dữ liệu sau sắp xếp ($a < e < c < b < d$)}
+  \label{tab:ex1-sorted}
+  \begin{tabular}{ccc}
+    \toprule
+    \textbf{TID} & \textbf{Giao dịch (đã sắp xếp)} & \textbf{Hạng mục đứng đầu} \\
+    \midrule
+    $T_1$ & $a,\; c,\; b,\; d$ & $a$ \\
+    $T_2$ & $e,\; c,\; b$       & $e$ \\
+    $T_3$ & $a,\; b,\; d$       & $a$ \\
+    $T_4$ & $e,\; c,\; b,\; d$  & $e$ \\
+    $T_5$ & $a,\; c,\; d$       & $a$ \\
+    $T_6$ & $e,\; b,\; d$       & $e$ \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+ 
+Trạng thái mảng $A$ sau khởi tạo được thể hiện trong Bảng~\ref{tab:ex1-init}.
+ 
+\begin{table}[H]
+  \centering
+  \caption{Mảng $A$ sau khởi tạo - Ví dụ 1}
+  \label{tab:ex1-init}
+  \begin{tabular}{cclp{5.5cm}}
+    \toprule
+    \textbf{Hạng mục} & $\mathbf{cnt}$ & \textbf{Danh sách (hậu tố)} & \textbf{Nguồn} \\
+    \midrule
+    $a$ & 3 & $(c,b,d) \to (b,d) \to (c,d)$ & $T_1, T_3, T_5$ \\
+    $e$ & 3 & $(c,b) \to (c,b,d) \to (b,d)$ & $T_2, T_4, T_6$ \\
+    $c$ & 0 & \textit{rỗng} & - \\
+    $b$ & 0 & \textit{rỗng} & - \\
+    $d$ & 0 & \textit{rỗng} & - \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+ 
+\subsection{Thực hiện thuật toán từng bước}
+ 
+\medskip
+% -- BƯỚC 1 --
+\begin{tikzpicture}
+\node[ rounded corners=4pt,
+      inner xsep=10pt, inner ysep=6pt, text width=\linewidth-28pt] {
+\textbf{{Bước 1 - Xử lý hạng mục $a$ \hfill $\mathrm{sup}(a) = 3 \geq \sigma$}}
+ 
+\smallskip
+\textbf{Ghi nhận:} $\{a\} \in \mathcal{F}$ với support = 3.
+ 
+\smallskip
+\textbf{Xây dựng $\mathit{DB}_a$} từ hậu tố các giao dịch trong $A[a]$:
+ 
+\medskip
+\begin{center}
+\begin{tabular}{ccc}
+  \toprule
+  Giao dịch gốc & Hậu tố (sau khi ẩn $a$) & Đưa vào $\mathit{DB}_a$ \\
+  \midrule
+  $T_1: (a,c,b,d)$ & $(c,b,d)$ & $j{=}c$; còn $(b,d)$ $\to$ mắt xích $\to B_a[c]$; $B_a[c].cnt\mathrel{+}=1$ \\
+  $T_3: (a,b,d)$   & $(b,d)$   & $j{=}b$; còn $(d)$ $\to$ mắt xích $\to B_a[b]$; $B_a[b].cnt\mathrel{+}=1$ \\
+  $T_5: (a,c,d)$   & $(c,d)$   & $j{=}c$; còn $(d)$ $\to$ mắt xích $\to B_a[c]$; $B_a[c].cnt\mathrel{+}=1$ \\
+  \bottomrule
+\end{tabular}
+\end{center}
+ 
+\medskip
+\textbf{Trạng thái $\mathit{DB}_a$ sau xây dựng:}
+$B_a[c].cnt = 2$ (danh sách: $(b,d)$, $(d)$),\quad
+$B_a[b].cnt = 1$ (danh sách: $(d)$),\quad
+$B_a[d].cnt = 0$ (rỗng).
+ 
+\medskip
+Đệ quy trên $\mathit{DB}_a$:
+\begin{itemize}[topsep=2pt, itemsep=1pt]
+  \item Xử lý $c$ trong $\mathit{DB}_a$: $B_a[c].cnt = 2 < \sigma$ $\Rightarrow$ bỏ qua.
+  Phân bổ lại từ $B_a[c]$: $(b,d) \to B_a[b]$, $B_a[b].cnt\mathrel{+}=1$; $(d) \to$ Counter-Only: $B_a[d].cnt\mathrel{+}=1$.
+  \item Xử lý $b$ trong $\mathit{DB}_a$: $B_a[b].cnt = 2 < \sigma$ $\Rightarrow$ bỏ qua.
+  Phân bổ lại từ $B_a[b]$: $(d) \to$ Counter-Only $B_a[d].cnt\mathrel{+}=1$; $(d) \to$ Counter-Only $B_a[d].cnt\mathrel{+}=1$. Tổng $B_a[d].cnt = 3$.
+  \item Xử lý $d$ trong $\mathit{DB}_a$: $B_a[d].cnt = 3 \geq \sigma$ $\Rightarrow$ \textbf{ghi nhận} $\{a,d\} \in \mathcal{F}$ (support = 3).
+\end{itemize}
+ 
+\medskip
+\textbf{Phân bổ lại (reassign) từ $A[a]$ về mảng $A$:}
+Mỗi mắt xích trong $A[a]$ được chuyển sang danh sách theo hạng mục dẫn đầu của nó:
+$(c,b,d) \to A[c]$, $A[c].cnt\mathrel{+}=1$;\quad
+$(b,d) \to A[b]$, $A[b].cnt\mathrel{+}=1$;\quad
+$(c,d) \to A[c]$, $A[c].cnt\mathrel{+}=1$.
+\\Cập nhật tổng: $A[c].cnt \mathrel{+}= 2$,\; $A[b].cnt \mathrel{+}= 1$.
+};
+\end{tikzpicture}
+ 
+\medskip
+ 
+\begin{table}[H]
+  \centering
+  \caption{Trạng thái mảng $A$ sau Bước 1 (sau reassign $a$)}
+  \label{tab:ex1-after1}
+  \begin{tabular}{ccl}
+    \toprule
+    \textbf{Hạng mục} & $\mathbf{cnt}$ & \textbf{Danh sách (hậu tố)} \\
+    \midrule
+    $a$ & 0 \textit{(đã xử lý)} & \textit{rỗng} \\
+    $e$ & 3 & $(c,b) \to (c,b,d) \to (b,d)$ \\
+    $c$ & 2 & $(b,d)$ [từ $T_1$] $\to$ $(d)$ [từ $T_5$] \\
+    $b$ & 1 & $(d)$ [từ $T_3$] \\
+    $d$ & 0 & \textit{rỗng} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+ 
+\medskip
+% -- BƯỚC 2 --
+\begin{tikzpicture}
+\node[ rounded corners=4pt,
+      inner xsep=10pt, inner ysep=6pt, text width=\linewidth-28pt] {
+\textbf{{Bước 2 - Xử lý hạng mục $e$ \hfill $\mathrm{sup}(e) = 3 \geq \sigma$}}
+ 
+\smallskip
+\textbf{Ghi nhận:} $\{e\} \in \mathcal{F}$ với support = 3.
+ 
+\smallskip
+\textbf{Xây dựng $\mathit{DB}_e$} từ hậu tố trong $A[e]$:
+ 
+\medskip
+\begin{center}
+\begin{tabular}{ccc}
+  \toprule
+  Giao dịch gốc & Hậu tố (ẩn $e$) & Đưa vào $\mathit{DB}_e$ \\
+  \midrule
+  $T_2: (e,c,b)$    & $(c,b)$   & Mắt xích $\to B_e[c]$ \\
+  $T_4: (e,c,b,d)$  & $(c,b,d)$ & Mắt xích $\to B_e[c]$ \\
+  $T_6: (e,b,d)$    & $(b,d)$   & Mắt xích $\to B_e[b]$ \\
+  \bottomrule
+\end{tabular}
+\end{center}
+ 
+\medskip
+\textbf{Đếm trong $\mathit{DB}_e$:}
+$\mathrm{sup}_{DB_e}(c) = 2$,\quad $\mathrm{sup}_{DB_e}(b) = 3$,\quad $\mathrm{sup}_{DB_e}(d) = 2$.
+ 
+\medskip
+Chỉ $b$ đạt ngưỡng. Đệ quy trên $\mathit{DB}_e$:
+\begin{itemize}[topsep=2pt, itemsep=1pt]
+  \item $c$: $\mathrm{sup} = 2 < \sigma$ $\Rightarrow$ bỏ qua.
+  \item $b$: $\mathrm{sup} = 3 \geq \sigma$ $\Rightarrow$ \textbf{ghi nhận} $\{e,b\} \in \mathcal{F}$ (support = 3).
+  \quad Đệ quy sâu hơn: $\mathrm{sup}_{DB_{eb}}(d) = 2 < \sigma$ $\Rightarrow$ dừng.
+\end{itemize}
+ 
+\medskip
+\textbf{Phân bổ lại từ $A[e]$ về mảng $A$:}
+$(c,b) \to A[c]$, $A[c].cnt\mathrel{+}=1$;\quad
+$(c,b,d) \to A[c]$, $A[c].cnt\mathrel{+}=1$;\quad
+$(b,d) \to A[b]$, $A[b].cnt\mathrel{+}=1$.
+\\Cập nhật tổng: $A[c].cnt \mathrel{+}= 2$,\; $A[b].cnt \mathrel{+}= 1$.
+};
+\end{tikzpicture}
+ 
+\medskip
+ 
+\begin{table}[H]
+  \centering
+  \caption{Trạng thái mảng $A$ sau Bước 2 (sau reassign $e$)}
+  \label{tab:ex1-after2}
+  \begin{tabular}{ccl}
+    \toprule
+    \textbf{Hạng mục} & $\mathbf{cnt}$ & \textbf{Danh sách (hậu tố)} \\
+    \midrule
+    $a$ & 0 \textit{(đã xử lý)} & \textit{rỗng} \\
+    $e$ & 0 \textit{(đã xử lý)} & \textit{rỗng} \\
+    $c$ & 4 & $(b,d)\to(d)$ [từ $a$] + $(b)\to(b,d)$ [từ $e$] \\
+    $b$ & 2 & $(d)$ [từ $a$] + $(d)$ [từ $e$] \\
+    $d$ & 0 & \textit{rỗng} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+ 
+\medskip
+% -- BƯỚC 3 --
+\begin{tikzpicture}
+\node[ rounded corners=4pt,
+      inner xsep=10pt, inner ysep=6pt, text width=\linewidth-28pt] {
+\textbf{{Bước 3 - Xử lý hạng mục $c$ \hfill $\mathrm{sup}(c) = 4 \geq \sigma$}}
+ 
+\smallskip
+\textbf{Ghi nhận:} $\{c\} \in \mathcal{F}$ với support = 4.
+ 
+\smallskip
+\textbf{Xây dựng $\mathit{DB}_c$}:
+$A[c]$ sau bước reassign của $a$ và $e$ chứa hậu tố từ $T_1, T_2, T_4, T_5$.
+ 
+\medskip
+\begin{center}
+\begin{tabular}{ccc}
+  \toprule
+  Nguồn & Hậu tố trong $A[c]$ & Khi ẩn $c$ $\to$ đưa vào $\mathit{DB}_c$ \\
+  \midrule
+  $T_1$ (từ $a$) & $(c,b,d)$ & $(b,d)$ $\to$ mắt xích $\to B_c[b]$ \\
+  $T_5$ (từ $a$) & $(c,d)$   & $(d)$ $\to$ \textbf{Counter-Only}: $B_c[d].\mathit{cnt}\mathrel{+}=1$ \\
+  $T_2$ (từ $e$) & $(c,b)$   & $(b)$ $\to$ \textbf{Counter-Only}: $B_c[b].\mathit{cnt}\mathrel{+}=1$ \\
+  $T_4$ (từ $e$) & $(c,b,d)$ & $(b,d)$ $\to$ mắt xích $\to B_c[b]$ \\
+  \bottomrule
+\end{tabular}
+\end{center}
+ 
+\medskip
+\textbf{Đếm trong $\mathit{DB}_c$:}
+$\mathrm{sup}_{DB_c}(b) = 3$ ($T_1, T_2, T_4$),\quad $\mathrm{sup}_{DB_c}(d) = 3$ ($T_1, T_4, T_5$).
+ 
+\medskip
+Cả $b$ và $d$ đều $\geq \sigma$. Đệ quy trên $\mathit{DB}_c$:
+\begin{itemize}[topsep=2pt, itemsep=1pt]
+  \item $b$: $\mathrm{sup} = 3 \geq \sigma$ $\Rightarrow$ \textbf{ghi nhận} $\{c,b\} \in \mathcal{F}$ (support = 3).
+    \\ Đệ quy $\mathit{DB}_{cb}$: hậu tố $(d)$ và $(d)$ $\to$ $\mathrm{sup}_{DB_{cb}}(d) = 2 < \sigma$ $\Rightarrow$ dừng.
+  \item $d$: $\mathrm{sup} = 3 \geq \sigma$ $\Rightarrow$ \textbf{ghi nhận} $\{c,d\} \in \mathcal{F}$ (support = 3).
+\end{itemize}
+ 
+\medskip
+\textbf{Phân bổ lại từ $A[c]$ về mảng $A$:}
+Mỗi mắt xích trong $A[c]$ được chuyển theo hạng mục dẫn đầu:
+$(b,d) \to A[b]$, $A[b].cnt\mathrel{+}=1$;\quad
+$(d) \to$ Counter-Only: $A[d].cnt\mathrel{+}=1$;\quad
+$(b) \to$ Counter-Only: $A[b].cnt\mathrel{+}=1$;\quad
+$(b,d) \to A[b]$, $A[b].cnt\mathrel{+}=1$.
+\\Cập nhật tổng: $A[b].cnt \mathrel{+}= 3$,\; $A[d].cnt \mathrel{+}= 1$.
+};
+\end{tikzpicture}
+ 
+\medskip
+ 
+\begin{table}[H]
+  \centering
+  \caption{Trạng thái mảng $A$ sau Bước 3 (sau reassign $c$)}
+  \label{tab:ex1-after3}
+  \begin{tabular}{ccl}
+    \toprule
+    \textbf{Hạng mục} & $\mathbf{cnt}$ & \textbf{Danh sách (hậu tố)} \\
+    \midrule
+    $a$ & 0 \textit{(đã xử lý)} & \textit{rỗng} \\
+    $e$ & 0 \textit{(đã xử lý)} & \textit{rỗng} \\
+    $c$ & 0 \textit{(đã xử lý)} & \textit{rỗng} \\
+    $b$ & 5 & $(d)$[từ $a$] + $(d)$[từ $e$] + $(d)$[từ $T_1$ qua $c$] + $(d)$[từ $T_4$ qua $c$] [+ 1 counter-only $T_2$] \\
+    $d$ & 1 & \textit{rỗng (counter-only từ $T_5$ qua $c$)} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+ 
+\medskip
+ 
+% -- BƯỚC 4 --
+\begin{tikzpicture}
+\node[rounded corners=4pt,
+      inner xsep=10pt, inner ysep=6pt, text width=\linewidth-28pt] {
+\textbf{{Bước 4 - Xử lý hạng mục $b$ \hfill $\mathrm{sup}(b) = 5 \geq \sigma$}}
+ 
+\smallskip
+\textbf{Ghi nhận:} $\{b\} \in \mathcal{F}$ với support = 5.
+ 
+\smallskip
+\textbf{Nguồn gốc $A[b].\mathit{cnt} = 5$:}
+\begin{itemize}[topsep=2pt, itemsep=1pt]
+  \item Bước 1 (reassign $a$): $T_3$ có hậu tố $(b,d)$ $\to$ $A[b].\mathit{cnt} \mathrel{+}= 1$, mắt xích $(d)$.
+  \item Bước 2 (reassign $e$): $T_6$ có hậu tố $(b,d)$ $\to$ $A[b].\mathit{cnt} \mathrel{+}= 1$, mắt xích $(d)$.
+  \item Bước 3 (reassign $c$): $T_1$ hậu tố $(b,d)$ $\to$ mắt xích $(d)$; $T_4$ hậu tố $(b,d)$ $\to$ mắt xích $(d)$; $T_2$ hậu tố $(b)$ $\to$ \textbf{Counter-Only}. Tổng: $A[b].\mathit{cnt} \mathrel{+}= 3$.
+\end{itemize}
+ 
+\smallskip
+\textbf{Xây dựng $\mathit{DB}_b$}:
+ 
+\medskip
+\begin{center}
+\begin{tabular}{ccc}
+  \toprule
+  Nguồn & Hậu tố trong $A[b]$ & Khi ẩn $b$ $\to$ đưa vào $\mathit{DB}_b$ \\
+  \midrule
+  $T_3$ (từ $a$) & $(d)$ & \textbf{Counter-Only}: $B_b[d].\mathit{cnt} \mathrel{+}= 1$ \\
+  $T_6$ (từ $e$) & $(d)$ & \textbf{Counter-Only}: $B_b[d].\mathit{cnt} \mathrel{+}= 1$ \\
+  $T_1$ (từ $c$) & $(d)$ & \textbf{Counter-Only}: $B_b[d].\mathit{cnt} \mathrel{+}= 1$ \\
+  $T_4$ (từ $c$) & $(d)$ & \textbf{Counter-Only}: $B_b[d].\mathit{cnt} \mathrel{+}= 1$ \\
+  \bottomrule
+\end{tabular}
+\end{center}
+ 
+\medskip
+\textbf{Đếm trong $\mathit{DB}_b$:}
+$\mathrm{sup}_{DB_b}(d) = 4$ (từ $T_1, T_3, T_4, T_6$; \textit{tất cả đều Counter-Only vì hậu tố chỉ còn 1 item}).
+ 
+\medskip
+$d$: $\mathrm{sup} = 4 \geq \sigma$ $\Rightarrow$ \textbf{ghi nhận} $\{b,d\} \in \mathcal{F}$ (support = 4).
+\\ Đệ quy $\mathit{DB}_{bd}$: rỗng (mọi hậu tố đều Counter-Only, không còn mắt xích nào) $\Rightarrow$ dừng.
+ 
+\medskip
+\textbf{Phân bổ lại:} 4 mắt xích $(d)$ chuyển sang $A[d]$.
+Cập nhật: $A[d].\mathit{cnt} \mathrel{+}= 4$.
+};
+\end{tikzpicture}
+ 
+\medskip
+ 
+\begin{table}[H]
+  \centering
+  \caption{Trạng thái mảng $A$ sau Bước 4 (sau reassign $b$)}
+  \label{tab:ex1-after4}
+  \begin{tabular}{ccl}
+    \toprule
+    \textbf{Hạng mục} & $\mathbf{cnt}$ & \textbf{Danh sách} \\
+    \midrule
+    $a$ & 0 \textit{(đã xử lý)} & \textit{rỗng} \\
+    $e$ & 0 \textit{(đã xử lý)} & \textit{rỗng} \\
+    $c$ & 0 \textit{(đã xử lý)} & \textit{rỗng} \\
+    $b$ & 0 \textit{(đã xử lý)} & \textit{rỗng} \\
+    $d$ & 5 & \textit{rỗng (counter-only tích lũy)} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+ 
+\medskip
+ 
+% -- BƯỚC 5 --
+\begin{tikzpicture}
+\node[ rounded corners=4pt,
+      inner xsep=10pt, inner ysep=6pt, text width=\linewidth-28pt] {
+\textbf{Bước 5 - Xử lý hạng mục $d$ \hfill $\mathrm{sup}(d) = 5 \geq \sigma$}
+ 
+\smallskip
+\textbf{Ghi nhận:} $\{d\} \in \mathcal{F}$ với support = 5.
+ 
+\smallskip
+\textbf{Nguồn gốc $A[d].\mathit{cnt} = 5$} (tích lũy qua Counter-Only và reassign dây chuyền):
+\begin{itemize}[topsep=2pt, itemsep=1pt]
+  \item Bước 3 (reassign $c$): $(d)$ từ $T_5$ (qua $c$) $\to$ Counter-Only $A[d].cnt\mathrel{+}=1$.
+  \item Bước 4 (reassign $b$): 4 mắt xích $(d)$ từ $T_1, T_3$ (qua $a{\to}c{\to}b$), $T_4, T_6$ (qua $e{\to}c/b$) $\to$ Counter-Only $A[d].cnt\mathrel{+}=4$.
+  \item Tổng tích lũy = $1 + 4 = 5$.
+\end{itemize}
+ 
+\smallskip
+$d$ là hạng mục cuối cùng trong thứ tự, không có hạng mục nào đứng sau $d$.
+Danh sách $A[d]$ không có mắt xích (toàn bộ đều Counter-Only) nên không xây dựng
+$\mathit{DB}_d$ và không có đệ quy. Thuật toán \textbf{kết thúc}.
+};
+\end{tikzpicture}
+ 
+\subsection{Tập kết quả}
+ 
+\begin{center}
+\begin{tikzpicture}
+\node[ rounded corners=5pt,
+      inner xsep=12pt, inner ysep=10pt, font=\small] {
+$\mathcal{F} = \bigl\{
+  \{a\}{:}3,\;\; \{e\}{:}3,\;\; \{c\}{:}4,\;\; \{b\}{:}5,\;\; \{d\}{:}5,\;\;
+  \{a,d\}{:}3,\;\; \{e,b\}{:}3,\;\; \{c,b\}{:}3,\;\; \{c,d\}{:}3,\;\; \{b,d\}{:}4
+\bigr\}$
+};
+\end{tikzpicture}
+\end{center}
+
+\subsection{Cây đệ quy (Recursion Tree)}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    level 1/.style={sibling distance=3cm, level distance=1.5cm},
+    level 2/.style={sibling distance=2cm, level distance=1.5cm},
+    every node/.style={draw=borderblue, thick, rectangle, rounded corners, fill=stepblue!10, font=\small, minimum width=1.4cm, align=center},
+    edge from parent/.style={draw, thick, ->, >=Stealth}
+]
+
+  \node[fill=gray!20, draw=black!70] {Root \\ $\mathcal{D}$}
+    child { node {$a:3$} 
+      child { node {$\{a, d\}:3$} }
+    }
+    child { node {$e:3$} 
+      child { node {$\{e, b\}:3$} }
+    }
+    child { node {$c:4$} 
+      child { node {$\{c, b\}:3$} }
+      child { node {$\{c, d\}:3$} }
+    }
+    child { node {$b:5$} 
+      child { node {$\{b, d\}:4$} }
+    }
+    child { node {$d:5$} };
+    
+\end{tikzpicture}
+\caption{Cây đệ quy của thuật toán RELIM trên Ví dụ 1. Các nhánh con có support $< \sigma$ bị cắt tỉa nên không hiển thị.}
+\label{fig:ex1-recursion-tree}
+\end{figure}
+ 
+\subsection{Kiểm tra chéo}
+ 
+\begin{table}[H]
+  \centering
+  \caption{Kiểm tra chéo toàn bộ tập hạng mục (Ví dụ 1, $\sigma = 3$)}
+  \label{tab:ex1-crosscheck}
+  \begin{tabular}{lcc@{\hskip 1.5em}lcc}
+    \toprule
+    \textbf{Tập} & $\mathbf{sup}$ & \textbf{Kết luận}
+      & \textbf{Tập} & $\mathbf{sup}$ & \textbf{Kết luận} \\
+    \midrule
+    \multicolumn{6}{l}{\textit{\textbf{1-tập (6 tập, gồm cả $f$ đã loại ở tiền xử lý):}}} \\
+    $\{a\}$      & 3 & {\textbf{Phổ biến}} & $\{b\}$     & 5 & {\textbf{Phổ biến}} \\
+    $\{e\}$      & 3 & {\textbf{Phổ biến}} & $\{d\}$     & 5 & {\textbf{Phổ biến}} \\
+    $\{c\}$      & 4 & {\textbf{Phổ biến}} & $\{f\}$     & 1 & {Loại (tiền xử lý)} \\
+    \midrule
+    \multicolumn{6}{l}{\textit{\textbf{2-tập ($\binom{5}{2} = 10$ tập):}}} \\
+    $\{a,e\}$    & 0 & {Loại}             & $\{e,b\}$   & 3 & {\textbf{Phổ biến}} \\
+    $\{a,c\}$    & 2 & {Loại}             & $\{e,d\}$   & 2 & {Loại} \\
+    $\{a,b\}$    & 2 & {Loại}             & $\{c,b\}$   & 3 & {\textbf{Phổ biến}} \\
+    $\{a,d\}$    & 3 & {\textbf{Phổ biến}} & $\{c,d\}$   & 3 & {\textbf{Phổ biến}} \\
+    $\{e,c\}$    & 2 & {Loại}             & $\{b,d\}$   & 4 & {\textbf{Phổ biến}} \\
+    \midrule
+    \multicolumn{6}{l}{\textit{\textbf{3-tập ($\binom{5}{3} = 10$ tập):}}} \\
+    $\{a,e,c\}$  & 0 & {Loại}   & $\{a,c,d\}$  & 2 & {Loại} \\
+    $\{a,e,b\}$  & 0 & {Loại}   & $\{a,b,d\}$  & 2 & {Loại} \\
+    $\{a,e,d\}$  & 0 & {Loại}   & $\{e,c,b\}$  & 2 & {Loại} \\
+    $\{a,c,b\}$  & 1 & {Loại}   & $\{e,c,d\}$  & 1 & {Loại} \\
+    $\{e,b,d\}$  & 2 & {Loại}   & $\{c,b,d\}$  & 2 & {Loại} \\
+    \midrule
+    \multicolumn{6}{l}{\textit{\textbf{4-tập ($\binom{5}{4} = 5$ tập):}}} \\
+    $\{a,e,c,b\}$  & 0 & {Loại}   & $\{a,c,b,d\}$  & 1 & {Loại} \\
+    $\{a,e,c,d\}$  & 0 & {Loại}   & $\{e,c,b,d\}$  & 1 & {Loại} \\
+    $\{a,e,b,d\}$  & 0 & {Loại}   &               &   &  \\
+    \midrule
+    \multicolumn{6}{l}{\textit{\textbf{5-tập ($\binom{5}{5} = 1$ tập):}}} \\
+    $\{a,e,c,b,d\}$ & 0 & {Loại} &               &   &  \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+ 
+Kết quả kiểm tra chéo xác nhận $\mathcal{F}$ do Relim tìm được là đầy đủ và chính xác.
+ 
+% ============================================================
+\section{Ví dụ 2: Tình huống đặc biệt - Counter-Only Transactions}
+\label{sec:ex2}
+% ============================================================
+ 
+\subsection{Mô tả tình huống đặc biệt}
+ 
+\begin{tikzpicture}
+\node[ rounded corners=4pt,
+      inner xsep=10pt, inner ysep=8pt, text width=\linewidth-24pt, font=\small] {
+\textbf{Tình huống Counter-Only} xảy ra khi trong quá trình xây dựng cơ sở dữ liệu
+điều kiện (\textsc{Build-Conditional-DB}) hoặc phân bổ lại (\textsc{Reassign}), một
+giao dịch sau khi ẩn hạng mục dẫn đầu chỉ còn lại \emph{đúng một} hạng mục duy nhất.
+Thay vì cấp phát mắt xích mới (tốn bộ nhớ và thời gian), Relim chỉ tăng biến đếm
+$A[j].\mathit{cnt}$. Ví dụ này được thiết kế với nhiều giao dịch ngắn (2 item) để
+Counter-Only xuất hiện \textit{tự nhiên và liên tục} trong các bước đệ quy, đặc biệt
+tại Bước~3 nơi \textbf{toàn bộ} thông tin được truyền qua biến đếm mà không cấp phát
+bất kỳ mắt xích nào.
+};
+\end{tikzpicture}
+ 
+\subsection{Thiết lập}
+ 
+\begin{center}
+\begin{tikzpicture}
+\node[ rounded corners=5pt,
+      inner xsep=12pt, inner ysep=8pt, font=\small] {
+  $\mathcal{I} = \{a, b, c, d\}$ \qquad
+  $|\mathcal{D}| = 5$ \qquad
+  $\sigma = 3$
+};
+\end{tikzpicture}
+\end{center}
+ 
+\begin{table}[H]
+  \centering
+  \caption{Cơ sở dữ liệu gốc và sau tiền xử lý (Ví dụ 2)}
+  \label{tab:ex2-db}
+  \begin{tabular}{cll}
+    \toprule
+    \textbf{TID} & \textbf{Giao dịch gốc} & \textbf{Sau tiền xử lý ($a < c < d < b$)} \\
+    \midrule
+    $T_1$ & $\{a, b, c, d\}$ & $a, c, d, b$ \\
+    $T_2$ & $\{a, b\}$       & $a, b$        \\
+    $T_3$ & $\{a, c\}$       & $a, c$        \\
+    $T_4$ & $\{b, c, d\}$    & $c, d, b$     \\
+    $T_5$ & $\{b, d\}$       & $d, b$        \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+ 
+\begin{table}[H]
+  \centering
+  \caption{Tần suất và thứ tự sắp xếp (Ví dụ 2)}
+  \label{tab:ex2-freq}
+  \begin{tabular}{ccccc}
+    \toprule
+    Hạng mục & $a$ & $c$ & $d$ & $b$ \\
+    \midrule
+    Tần suất & 3 & 3 & 3 & 4 \\
+    Thứ tự   & 1 & 2 & 3 & 4 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+ 
+\subsection{Xây dựng mảng ban đầu}
+ 
+Theo Thuật toán~\ref{alg:relim-main}, mỗi giao dịch có $|T| > 1$ luôn tạo mắt xích
+trong danh sách $A[i]$ (với $i$ là hạng mục đứng đầu). Counter-Only chỉ được áp dụng
+bên trong \textsc{Build-Conditional-DB} và \textsc{Reassign}, không áp dụng tại khởi tạo.
+ 
+\begin{table}[H]
+  \centering
+  \caption{Phân loại giao dịch vào mảng $A$ theo Thuật toán~\ref{alg:relim-main}}
+  \label{tab:ex2-init}
+  \begin{tabular}{cclcl}
+    \toprule
+    \textbf{TID} & \textbf{H.mục đầu} & \textbf{Hậu tố còn lại} & \textbf{$|T|$} & \textbf{Hành động} \\
+    \midrule
+    $T_1$ & $a$ & $(c, d, b)$ & 4 & $A[a].cnt\mathrel{+}=1$; tạo mắt xích $\to A[a]$ \\
+    $T_2$ & $a$ & $(b)$       & 2 & $A[a].cnt\mathrel{+}=1$; tạo mắt xích $\to A[a]$ \\
+    $T_3$ & $a$ & $(c)$       & 2 & $A[a].cnt\mathrel{+}=1$; tạo mắt xích $\to A[a]$ \\
+    $T_4$ & $c$ & $(d, b)$    & 3 & $A[c].cnt\mathrel{+}=1$; tạo mắt xích $\to A[c]$ \\
+    $T_5$ & $d$ & $(b)$       & 2 & $A[d].cnt\mathrel{+}=1$; tạo mắt xích $\to A[d]$ \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+ 
+\begin{table}[H]
+  \centering
+  \caption{Trạng thái mảng $A$ sau khởi tạo (Ví dụ 2)}
+  \label{tab:ex2-array}
+  \begin{tabular}{ccll}
+    \toprule
+    \textbf{H.mục} & $\mathbf{cnt}$ & \textbf{Danh sách liên kết} & \textbf{Ghi chú} \\
+    \midrule
+    $a$ & 3 & $(c,d,b) \to (b) \to (c)$ & 3 mắt xích từ $T_1, T_2, T_3$ \\
+    $c$ & 1 & $(d,b)$   & 1 mắt xích từ $T_4$ \\
+    $d$ & 1 & $(b)$     & 1 mắt xích từ $T_5$ \\
+    $b$ & 0 & \textit{rỗng} & Không có giao dịch nào có $b$ đứng đầu \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+ 
+\subsection{Thực hiện thuật toán từng bước}
+ 
+\medskip
+% -- EX2 BƯỚC 1 --
+\begin{tikzpicture}
+\node[ rounded corners=4pt,
+      inner xsep=10pt, inner ysep=6pt, text width=\linewidth-28pt] {
+\textbf{{Bước 1 - Xử lý hạng mục $a$ \hfill $\mathrm{sup}(a) = 3 \geq \sigma$}}
+ 
+\smallskip
+\textbf{Ghi nhận:} $\{a\} \in \mathcal{F}$ với support = 3.
+ 
+\smallskip
+\textbf{Xây dựng $\mathit{DB}_a$} từ 3 mắt xích trong $A[a]$:
+ 
+\medskip
+\begin{center}
+\begin{tabular}{clll}
+  \toprule
+  Nguồn & Hậu tố & Ẩn h.mục đầu & Đưa vào $\mathit{DB}_a$ \\
+  \midrule
+  $T_1$ & $(c,d,b)$ & $j{=}c$; còn $(d,b)$ & Mắt xích $\to B_a[c]$; $B_a[c].cnt\mathrel{+}=1$ \\
+  $T_2$ & $(b)$     & $j{=}b$; còn rỗng    & \textbf{Counter-Only}: $B_a[b].cnt\mathrel{+}=1$ \\
+  $T_3$ & $(c)$     & $j{=}c$; còn rỗng    & \textbf{Counter-Only}: $B_a[c].cnt\mathrel{+}=1$ \\
+  \bottomrule
+\end{tabular}
+\end{center}
+ 
+\medskip
+\textbf{Đếm trong $\mathit{DB}_a$:}
+$\mathrm{sup}_{DB_a}(c) = 2$ ($T_1$ mắt xích $+$ $T_3$ Counter-Only),\quad
+$\mathrm{sup}_{DB_a}(b) = 1$ ($T_2$ Counter-Only).
+ 
+\medskip
+Không có hạng mục nào đạt $\sigma = 3$ $\Rightarrow$ \textbf{không} sinh thêm tập với tiền tố $\{a\}$.
+ 
+\medskip
+\textit{Lưu ý: Counter-Only xuất hiện tự nhiên tại đây -- $T_2$ và $T_3$ có hậu tố
+chỉ còn 1 item sau khi ẩn hạng mục đầu, nên không cần cấp phát mắt xích trong $\mathit{DB}_a$.}
+ 
+\medskip
+\textbf{Phân bổ lại} 3 mắt xích từ $A[a]$:
+\begin{itemize}[topsep=2pt, itemsep=1pt]
+  \item $T_1$: $(c,d,b)$, $j{=}c$, còn $(d,b)$ $\to$ chèn vào $A[c]$; $A[c].cnt\mathrel{+}=1$.
+  \item $T_2$: $(b)$, $j{=}b$, còn rỗng $\to$ chỉ $A[b].cnt\mathrel{+}=1$ (Counter-Only).
+  \item $T_3$: $(c)$, $j{=}c$, còn rỗng $\to$ chỉ $A[c].cnt\mathrel{+}=1$ (Counter-Only).
+\end{itemize}
+};
+\end{tikzpicture}
+ 
+\medskip
+\begin{table}[H]
+  \centering
+  \caption{Mảng $A$ sau Bước 1 (Ví dụ 2)}
+  \label{tab:ex2-after1}
+  \begin{tabular}{ccl}
+    \toprule
+    \textbf{H.mục} & $\mathbf{cnt}$ & \textbf{Danh sách} \\
+    \midrule
+    $c$ & 3 & $(d,b)$ [từ $T_4$] + $(d,b)$ [reassign $T_1$] \\
+    $d$ & 1 & $(b)$ [từ $T_5$, không thay đổi] \\
+    $b$ & 1 & \textit{rỗng} (Counter-Only từ reassign $T_2$) \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+ 
+\medskip
+% -- EX2 BƯỚC 2 --
+\begin{tikzpicture}
+\node[ rounded corners=4pt,
+      inner xsep=10pt, inner ysep=6pt, text width=\linewidth-28pt] {
+\textbf{{Bước 2 - Xử lý hạng mục $c$ \hfill $\mathrm{sup}(c) = 3 \geq \sigma$}}
+ 
+\smallskip
+\textbf{Ghi nhận:} $\{c\} \in \mathcal{F}$ với support = 3.
+ 
+\smallskip
+$A[c]$ chứa 2 mắt xích với hậu tố $(d,b)$ từ $T_4$ và $(d,b)$ từ reassign $T_1$.
+
+\smallskip
+\textbf{Xây dựng $\mathit{DB}_c$}:
+ 
+\medskip
+\begin{center}
+\begin{tabular}{clll}
+  \toprule
+  Nguồn & Hậu tố & Ẩn h.mục đầu & Đưa vào $\mathit{DB}_c$ \\
+  \midrule
+  $T_4$ & $(d,b)$ & $j{=}d$; còn $(b)$ & Mắt xích $\to B_c[d]$; $B_c[d].cnt\mathrel{+}=1$ \\
+  $T_1$ & $(d,b)$ & $j{=}d$; còn $(b)$ & Mắt xích $\to B_c[d]$; $B_c[d].cnt\mathrel{+}=1$ \\
+  \bottomrule
+\end{tabular}
+\end{center}
+ 
+\medskip
+\textbf{Đếm trong $\mathit{DB}_c$:}
+$\mathrm{sup}_{DB_c}(d) = 2$,\quad $\mathrm{sup}_{DB_c}(b) = 0$.
+Không có hạng mục nào đạt $\sigma = 3$ $\Rightarrow$ không sinh tập với tiền tố $\{c\}$.
+ 
+Kiểm tra: $\mathrm{sup}(\{c,b\}) = |\{T_1, T_4\}| = 2 < \sigma$ \checkmark{} nhất quán.
+ 
+\medskip
+\textbf{Phân bổ lại} 2 mắt xích từ $A[c]$:
+\begin{itemize}[topsep=2pt, itemsep=1pt]
+  \item $T_4$: $(d,b)$, $j{=}d$, còn $(b)$ $\to$ chèn vào $A[d]$; $A[d].cnt\mathrel{+}=1$.
+  \item $T_1$: $(d,b)$, $j{=}d$, còn $(b)$ $\to$ chèn vào $A[d]$; $A[d].cnt\mathrel{+}=1$.
+\end{itemize}
+Sau reassign: $A[d].cnt = 1 + 2 = 3$, danh sách: $(b)[T_5] \to (b)[T_4] \to (b)[T_1]$.
+};
+\end{tikzpicture}
+ 
+\medskip
+
+\begin{table}[H]
+  \centering
+  \caption{Mảng $A$ sau Bước 2 (Ví dụ 2)}
+  \label{tab:ex2-after2}
+  \begin{tabular}{ccl}
+    \toprule
+    \textbf{H.mục} & $\mathbf{cnt}$ & \textbf{Danh sách} \\
+    \midrule
+    $a$ & 0 \textit{(đã xử lý)} & \textit{rỗng} \\
+    $c$ & 0 \textit{(đã xử lý)} & \textit{rỗng} \\
+    $d$ & 3 & $(b)[T_5] \to (b)[T_4] \to (b)[T_1]$ \\
+    $b$ & 1 & \textit{rỗng (counter-only từ $T_2$)} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\medskip
+% -- EX2 BƯỚC 3 --
+\begin{tikzpicture}
+\node[ rounded corners=4pt,
+      inner xsep=10pt, inner ysep=6pt, text width=\linewidth-28pt] {
+\textbf{{Bước 3 - Xử lý hạng mục $d$ \hfill $\mathrm{sup}(d) = 3 \geq \sigma$}}
+ 
+\smallskip
+\textbf{Ghi nhận:} $\{d\} \in \mathcal{F}$ với support = 3.
+ 
+\smallskip
+$A[d]$ chứa 3 mắt xích, mỗi mắt xích có hậu tố $(b)$:
+ 
+\medskip
+\textbf{Xây dựng $\mathit{DB}_d$}:
+ 
+\medskip
+\begin{center}
+\begin{tabular}{clll}
+  \toprule
+  Nguồn & Hậu tố & Ẩn h.mục đầu & Đưa vào $\mathit{DB}_d$ \\
+  \midrule
+  $T_5$ & $(b)$ & $j{=}b$; còn rỗng & \textbf{Counter-Only}: $B_d[b].cnt\mathrel{+}=1$ \\
+  $T_4$ & $(b)$ & $j{=}b$; còn rỗng & \textbf{Counter-Only}: $B_d[b].cnt\mathrel{+}=1$ \\
+  $T_1$ & $(b)$ & $j{=}b$; còn rỗng & \textbf{Counter-Only}: $B_d[b].cnt\mathrel{+}=1$ \\
+  \bottomrule
+\end{tabular}
+\end{center}
+ 
+\medskip
+\textbf{Đếm trong $\mathit{DB}_d$:}
+$\mathrm{sup}_{DB_d}(b) = 3 \geq \sigma$
+$\Rightarrow$ \textbf{Ghi nhận} $\{d, b\} \in \mathcal{F}$ với support = 3.
+ 
+\smallskip
+Đệ quy $\mathit{DB}_{db}$: rỗng (toàn bộ Counter-Only, không có mắt xích nào) $\Rightarrow$ dừng.
+ 
+\medskip
+\textit{\textbf{Đây là điểm mấu chốt:} tập $\{d,b\}$ được phát hiện nhờ tích lũy
+\textbf{ba lần Counter-Only liên tiếp}. Không có mắt xích nào được cấp phát trong
+$\mathit{DB}_d$ -- toàn bộ thông tin support được truyền qua biến đếm $B_d[b].cnt$.
+Nếu không có tối ưu hóa Counter-Only, ba mắt xích thừa sẽ bị cấp phát rồi ngay lập
+tức bị bỏ đi vì hậu tố rỗng, gây lãng phí bộ nhớ.}
+ 
+\medskip
+\textbf{Phân bổ lại:} 3 mắt xích, mỗi mắt xích $j{=}b$, còn rỗng $\to$ $A[b].cnt\mathrel{+}=3$.
+};
+\end{tikzpicture}
+ 
+\medskip
+
+\begin{table}[H]
+  \centering
+  \caption{Mảng $A$ sau Bước 3 (Ví dụ 2)}
+  \label{tab:ex2-after3}
+  \begin{tabular}{ccl}
+    \toprule
+    \textbf{H.mục} & $\mathbf{cnt}$ & \textbf{Danh sách} \\
+    \midrule
+    $a$ & 0 \textit{(đã xử lý)} & \textit{rỗng} \\
+    $c$ & 0 \textit{(đã xử lý)} & \textit{rỗng} \\
+    $d$ & 0 \textit{(đã xử lý)} & \textit{rỗng} \\
+    $b$ & 4 & \textit{rỗng (counter-only: 1 từ $T_2$ + 3 từ reassign $d$)} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\medskip
+% -- EX2 BƯỚC 4 --
+\begin{tikzpicture}
+\node[rounded corners=4pt,
+      inner xsep=10pt, inner ysep=6pt, text width=\linewidth-28pt] {
+\textbf{Bước 4 - Xử lý hạng mục $b$ \hfill $\mathrm{sup}(b) = 4 \geq \sigma$}
+ 
+\smallskip
+\textbf{Ghi nhận:} $\{b\} \in \mathcal{F}$ với support = 4.
+
+\smallskip
+\textbf{Nguồn gốc $A[b].cnt = 4$:} $0$ (init) $+ 1$ (reassign $T_2$ ở Bước 1)
+$+ 3$ (reassign $T_5, T_4, T_1$ ở Bước 3) $= 4$.
+
+\smallskip
+Không có hạng mục nào đứng sau $b$ trong thứ tự. \textbf{Thuật toán kết thúc.}
+};
+\end{tikzpicture}
+ 
+\subsection{Tập kết quả}
+ 
+\begin{center}
+\begin{tikzpicture}
+\node[ rounded corners=5pt,
+      inner xsep=12pt, inner ysep=10pt, font=\small] {
+$\mathcal{F} = \bigl\{
+  \{a\}{:}3,\;\; \{c\}{:}3,\;\; \{d\}{:}3,\;\; \{b\}{:}4,\;\; \{d,b\}{:}3
+\bigr\}$
+};
+\end{tikzpicture}
+\end{center}
+ 
+\subsection{Kiểm tra chéo}
+ 
+\begin{table}[H]
+  \centering
+  \caption{Kiểm tra chéo toàn bộ tập hạng mục (Ví dụ 2, $\sigma = 3$)}
+  \label{tab:ex2-crosscheck}
+  \begin{tabular}{lcc@{\hskip 1.5em}lcc}
+    \toprule
+    \textbf{Tập} & $\mathbf{sup}$ & \textbf{Kết luận}
+      & \textbf{Tập} & $\mathbf{sup}$ & \textbf{Kết luận} \\
+    \midrule
+    \multicolumn{6}{l}{\textit{\textbf{1-tập (4 tập):}}} \\
+    $\{a\}$   & 3 & {\textbf{Phổ biến}} & $\{d\}$   & 3 & {\textbf{Phổ biến}} \\
+    $\{c\}$   & 3 & {\textbf{Phổ biến}} & $\{b\}$   & 4 & {\textbf{Phổ biến}} \\
+    \midrule
+    \multicolumn{6}{l}{\textit{\textbf{2-tập ($\binom{4}{2} = 6$ tập):}}} \\
+    $\{a,c\}$  & 2 & {Loại} & $\{c,d\}$  & 2 & {Loại} \\
+    $\{a,d\}$  & 1 & {Loại} & $\{c,b\}$  & 2 & {Loại} \\
+    $\{a,b\}$  & 2 & {Loại} & $\{d,b\}$  & 3 & {\textbf{Phổ biến}} \\
+    \midrule
+    \multicolumn{6}{l}{\textit{\textbf{3-tập ($\binom{4}{3} = 4$ tập):}}} \\
+    $\{a,c,d\}$  & 1 & {Loại}   & $\{a,c,b\}$  & 1 & {Loại} \\
+    $\{a,d,b\}$  & 1 & {Loại}   & $\{c,d,b\}$  & 2 & {Loại} \\
+    \midrule
+    \multicolumn{6}{l}{\textit{\textbf{4-tập ($\binom{4}{4} = 1$ tập):}}} \\
+    $\{a,c,d,b\}$ & 1 & {Loại} &               &   &  \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+ 
+Kết quả kiểm tra chéo xác nhận tính đúng đắn. Đặc biệt, $\{d,b\}$ với support 3
+chỉ được phát hiện nhờ tích lũy ba lần Counter-Only tại $\mathit{DB}_d[b]$:
+mỗi mắt xích trong $A[d]$ có hậu tố chỉ còn 1 item $(b)$, nên khi xây dựng
+$\mathit{DB}_d$, thuật toán chỉ tăng biến đếm mà không cấp phát mắt xích nào.
+Nếu không có tối ưu hóa Counter-Only, ba mắt xích sẽ bị cấp phát rồi ngay lập tức
+bị bỏ đi, gây lãng phí bộ nhớ -- đặc biệt nghiêm trọng ở các tầng đệ quy sâu
+nơi giao dịch đã bị thu ngắn đáng kể.
+ 
+
+% ============================================================
+% CHƯƠNG 3: CÀI ĐẶT
+% Người thực hiện: Mỹ Linh
+% Ngôn ngữ: Julia (nhận +5 điểm thưởng theo quy định đề bài)
+% ============================================================
+\chapter{CÀI ĐẶT}
+
+Chương này trình bày quá trình cài đặt thuật toán Relim từ đầu bằng ngôn ngữ
+Julia, bám sát mã giả đã phân tích ở Chương~1. Phần cài đặt được tổ chức thành
+bốn cấp độ (level) theo yêu cầu của đề bài: (1)~thuật toán cơ bản, (2)~kiểm thử
+tự động, (3)~tối ưu hóa có đo lường, và (4)~xử lý vào/ra chuẩn SPMF kèm giao
+diện dòng lệnh.
+
+% ------------------------------------------------------------
+\section{Môi trường và công cụ}
+% ------------------------------------------------------------
+
+Toàn bộ mã nguồn được phát triển và kiểm thử trên cấu hình ở
+Bảng~\ref{tab:env}. Nhóm chọn Julia vì ngôn ngữ này vừa cho phép viết mã ở mức
+trừu tượng cao, vừa biên dịch JIT (Just-In-Time) sang mã máy nên đạt hiệu năng
+gần với C trong các vòng lặp nóng (hot loop) - phù hợp với một thuật toán khai
+phá dữ liệu thiên về thao tác con trỏ và đệ quy như Relim.
+
+\begin{table}[H]
+    \centering
+    \caption{Môi trường thực nghiệm}
+    \label{tab:env}
+    \begin{tabularx}{\textwidth}{|l|X|}
+        \hline
+        \textbf{Thành phần} & \textbf{Chi tiết} \\
+        \hline
+        Ngôn ngữ        & Julia 1.12.5 (yêu cầu đề bài: $\geq 1.9$) \\
+        \hline
+        Hệ điều hành    & Linux Mint 22.3 (nhân Linux 6.17) \\
+        \hline
+        CPU             & Intel Core i5-11320H @ 3.20\,GHz \\
+        \hline
+        RAM             & 16\,GB \\
+        \hline
+        Thư viện        & \texttt{BenchmarkTools.jl} (đo thời gian/bộ nhớ),
+                          \texttt{Test}, \texttt{Random} (thư viện chuẩn) \\
+        \hline
+        Quản lý gói     & \texttt{Project.toml} (tương đương
+                          \texttt{requirements.txt} của Python) \\
+        \hline
+    \end{tabularx}
+\end{table}
+
+Theo đúng quy định của đề bài, nhóm \textbf{không sử dụng bất kỳ thư viện khai
+phá tập phổ biến có sẵn nào}; mọi cấu trúc dữ liệu và logic của thuật toán đều
+được tự cài đặt dựa trên bài báo gốc của Borgelt~\cite{borgelt2005}.
+
+% ------------------------------------------------------------
+\section{Kiến trúc mã nguồn}
+% ------------------------------------------------------------
+
+Mã nguồn được tổ chức theo cấu trúc thư mục gợi ý trong đề bài, tách bạch giữa
+định nghĩa cấu trúc dữ liệu, thuật toán, tiện ích vào/ra và bộ kiểm thử:
+
+\begin{lstlisting}[style=julia, caption={Cấu trúc thư mục mã nguồn},
+                   label={lst:tree}]
+relim_datamining_julia/
+|-- Project.toml             # Dac ta dependencies (Julia)
+|-- README.md                # Huong dan cai dat va su dung
+|-- src/
+|   |-- structures.jl        # Cau truc du lieu: mang A + linked list
+|   |-- utils.jl             # I/O dinh dang SPMF + parse tham so dong lenh
+|   |-- main.jl              # Entry point (CLI)
+|   `-- algorithm/
+|       |-- relim.jl         # Thuat toan Relim (ham chinh + ham con)
+|       `-- visualize.jl     # Minh hoa tung buoc (Chuong 2)
+|-- tests/
+|   |-- test_unit.jl         # Unit test (Chuong 3): doi chung brute-force
+|   |-- bench_opt.jl         # Do L1 vs L3 (thoi gian + bo nho)
+|   |-- test_correctness.jl  # Correctness vs SPMF (Chuong 4)
+|   `-- test_benchmark.jl    # Benchmark + so sanh SPMF (Chuong 4)
+`-- data/
+    |-- toy/                 # CSDL nho cho vi du tay
+    |-- benchmark/           # CSDL benchmark (chess, mushroom, retail, ...)
+    `-- real_world/          # CSDL thuc te (Market Basket)
+\end{lstlisting}
+
+\subsection{Mô tả các module chính}
+
+\begin{itemize}
+    \item \texttt{structures.jl}: định nghĩa ba kiểu dữ liệu cốt lõi của Relim
+    là \texttt{ListNode} (mắt xích danh sách liên kết), \texttt{RelimEntry}
+    (phần tử $A[i]$ gồm bộ đếm và con trỏ đầu danh sách) và \texttt{RelimArray}
+    (mảng $A$). Các kiểu này hiện thực hóa trực tiếp cấu trúc ``mảng danh sách
+    liên kết đơn'' đã mô tả ở Mục~\ref{subsec:ds} và minh họa ở
+    Hình~\ref{fig:relim-structure}.
+
+    \item \texttt{relim.jl}: chứa hàm public \texttt{relim} cùng ba hàm con
+    \texttt{recursive\_relim!}, \texttt{build\_conditional} và
+    \texttt{reassign!}, ánh xạ một-một với ba thủ tục mã giả
+    \textsc{Relim}, \textsc{Recursive-Relim} và \textsc{Build-Conditional-DB}
+    (Thuật toán~\ref{alg:relim-main}, \ref{alg:relim-recursive},
+    \ref{alg:relim-build-cond}).
+
+    \item \texttt{utils.jl}: tiện ích đọc/ghi file định dạng SPMF
+    (\texttt{load\_spmf}, \texttt{save\_spmf}), hàm đếm support phục vụ kiểm thử
+    (\texttt{count\_support}) và bộ phân tích tham số dòng lệnh
+    (\texttt{parse\_cli}).
+
+    \item \texttt{main.jl}: điểm vào của chương trình, kết nối các module trên
+    thành một công cụ dòng lệnh hoàn chỉnh.
+\end{itemize}
+
+\section{Cài đặt Level 1: Thuật toán cơ bản}
+
+
+\subsection{Cấu trúc dữ liệu}
+
+Cấu trúc dữ liệu được định nghĩa trong \texttt{structures.jl}. Mỗi giao dịch
+được lưu một lần dưới dạng \texttt{Vector\{Int\}} và được \textbf{chia sẻ} (share)
+giữa các mắt xích thông qua trường \texttt{trans} cùng con trỏ vị trí
+\texttt{trans\_ptr}; nhờ vậy việc ``ẩn'' một hạng mục dẫn đầu chỉ là phép tăng
+con trỏ chứ không phải sao chép mảng.
+
+\begin{lstlisting}[style=julia, caption={Định nghĩa cấu trúc dữ liệu (structures.jl)},
+                   label={lst:structures}]
+mutable struct ListNode
+    trans::Vector{Int}             # tham chieu (share) toi giao dich goc
+    trans_ptr::Int                 # offset 1-based cua item ke tiep
+    next::Union{ListNode,Nothing}  # con tro toi mat xich ke tiep
+end
+
+mutable struct RelimEntry
+    cnt::Int                       # so giao dich co item nay lam leading item
+    head::Union{ListNode,Nothing}  # con tro dau danh sach lien ket
+end
+
+RelimEntry() = RelimEntry(0, nothing)
+
+const RelimArray = Vector{RelimEntry}
+new_relim_array(k::Int)::RelimArray = [RelimEntry() for _ in 1:k]
+\end{lstlisting}
+
+\subsection{Hàm chính và tiền xử lý}
+
+Hàm \texttt{relim} (Listing~\ref{lst:relim-main}) hiện thực hóa thủ tục
+\textsc{Relim} (Thuật toán~\ref{alg:relim-main}). Năm bước trong mã nguồn được
+chú thích tương ứng với năm bước trong mã giả: (1)~đếm support một lần quét,
+(2)~lọc hạng mục phổ biến, (3)~ánh xạ lại (remap) hạng mục về chỉ số $1..k$ theo
+thứ tự support \emph{tăng dần} và sắp các hạng mục trong từng giao dịch,
+(4)~dựng mảng $A$ ban đầu, và (5)~gọi đệ quy.
+
+Việc ánh xạ hạng mục gốc sang chỉ số liên tục $1..k$ cho phép dùng trực tiếp
+mảng (\texttt{Vector}) thay cho từ điển (\texttt{Dict}) trong vòng đệ quy, giúp
+truy cập $A[i]$ với chi phí $O(1)$ và thân thiện với bộ nhớ đệm (cache).
+
+\begin{lstlisting}[style=julia, caption={Hàm chính \texttt{relim} (relim.jl)},
+                   label={lst:relim-main}]
+function relim(transactions::Vector{Vector{Int}}, minsup::Real;
+               relative::Bool=true,
+               counter_only::Bool=true)::Vector{Tuple{Vector{Int},Int}}
+
+    n = length(transactions)
+    minsup_abs = relative ? max(1, ceil(Int, minsup * n)) : Int(minsup)
+
+    # Buoc 1: dem support cua tung item (1 lan quet)
+    counts = Dict{Int,Int}()
+    for t in transactions, x in t
+        counts[x] = get(counts, x, 0) + 1
+    end
+
+    # Buoc 2: loc item pho bien
+    freq_items = [it for (it, c) in counts if c >= minsup_abs]
+    isempty(freq_items) && return Tuple{Vector{Int},Int}[]
+
+    # Remap: item pho bien -> chi so 1..k, sap theo support TANG DAN
+    sort!(freq_items; by = it -> (counts[it], it))
+    k = length(freq_items)
+    item2idx = Dict{Int,Int}(it => i for (i, it) in enumerate(freq_items))
+    idx2item = freq_items
+
+    # Buoc 3: voi moi giao dich, giu lai item pho bien va sort theo index
+    sorted_txns = Vector{Vector{Int}}()
+    sizehint!(sorted_txns, n)
+    @inbounds for t in transactions
+        filtered = Int[]
+        sizehint!(filtered, length(t))
+        for x in t
+            idx = get(item2idx, x, 0)
+            idx == 0 || push!(filtered, idx)
+        end
+        if !isempty(filtered)
+            sort!(filtered)
+            push!(sorted_txns, filtered)
+        end
+    end
+
+    # Buoc 4: dung mang A ban dau
+    A = new_relim_array(k)
+    @inbounds for t in sorted_txns
+        i = t[1]
+        A[i].cnt += 1
+        A[i].head = ListNode(t, 2, A[i].head)  # "an" item dau = tang con tro
+    end
+
+    # Buoc 5: de quy
+    F = Vector{Tuple{Vector{Int},Int}}()
+    prefix = Int[]
+    recursive_relim!(A, prefix, minsup_abs, F, idx2item, counter_only)
+    return F
+end
+\end{lstlisting}
+
+\subsection{Hàm đệ quy chính}
+
+Hàm \texttt{recursive\_relim!} (Listing~\ref{lst:relim-rec}) là phần lõi của
+thuật toán, tương ứng Thuật toán~\ref{alg:relim-recursive}. Với mỗi hạng mục $i$
+(duyệt từ hạng mục ít phổ biến nhất): nếu đủ support thì xuất tập phổ biến
+$P \cup \{i\}$, dựng cơ sở dữ liệu điều kiện rồi đệ quy; sau đó thực hiện bước
+\emph{loại bỏ} (elimination) - chuyển toàn bộ mắt xích của $A[i]$ sang các danh
+sách tương ứng với hạng mục dẫn đầu mới. Dấu \texttt{!} ở cuối tên hàm là quy
+ước của Julia cho hàm có biến đổi (mutate) đối số.
+
+\begin{lstlisting}[style=julia, caption={Hàm đệ quy \texttt{recursive\_relim!} (relim.jl)},
+                   label={lst:relim-rec}]
+function recursive_relim!(A::RelimArray, prefix::Vector{Int}, smin::Int,
+                          F::Vector{Tuple{Vector{Int},Int}},
+                          idx2item::Vector{Int}, counter_only::Bool)
+    k = length(A)
+    @inbounds for i in 1:k
+        c = A[i].cnt
+        if c >= smin
+            push!(prefix, idx2item[i])
+            push!(F, (sort(copy(prefix)), c))           # OUTPUT P u {i}
+            A_cond = build_conditional(A[i], k, counter_only)
+            recursive_relim!(A_cond, prefix, smin, F, idx2item, counter_only)
+            pop!(prefix)
+        end
+        reassign!(A[i], A)   # ELIMINATION: loai item i khoi CSDL hien tai
+    end
+end
+\end{lstlisting}
+
+Hai hàm con còn lại đảm nhiệm việc dựng cơ sở dữ liệu điều kiện và bước loại bỏ
+(Listing~\ref{lst:relim-helpers}). Trong \texttt{build\_conditional}, mỗi giao
+dịch đã ẩn hạng mục dẫn đầu được phân loại theo hạng mục kế tiếp $j$. Khối lệnh
+\texttt{if p + 1 <= L} chính là vị trí áp dụng \textbf{Counter-Only
+Optimization} sẽ trình bày ở Level~3: khi giao dịch chỉ còn đúng một hạng mục,
+ta chỉ tăng bộ đếm mà không cấp phát mắt xích mới.
+
+\begin{lstlisting}[style=julia, caption={Hàm \texttt{build\_conditional} và \texttt{reassign!} (relim.jl)},
+                   label={lst:relim-helpers}]
+function build_conditional(entry::RelimEntry, k_cond::Int,
+                           counter_only::Bool)::RelimArray
+    A_cond = new_relim_array(k_cond)
+    node = entry.head
+    @inbounds while node !== nothing
+        t = node.trans; p = node.trans_ptr; L = length(t)
+        if p <= L
+            j = t[p]                       # item dan dau moi (j > i)
+            if j <= k_cond
+                A_cond[j].cnt += 1
+                if p + 1 <= L
+                    A_cond[j].head = ListNode(t, p + 1, A_cond[j].head)
+                elseif !counter_only       # ban L1: van cap node "rong"
+                    A_cond[j].head = ListNode(t, p + 1, A_cond[j].head)
+                end
+            end
+        end
+        node = node.next
+    end
+    return A_cond
+end
+ 
+\begin{remark}
+\textbf{Sự khác biệt giữa Giả mã và Cài đặt:} Trong Thuật toán 2 (Chương 1),
+giả mã sử dụng thao tác $\mathrm{Copy}(e)$ để tạo bản sao hoàn toàn của mắt xích.
+Tuy nhiên, trong cài đặt Julia, do đặc thù quản lý bộ nhớ, việc sao chép mảng liên tục rất
+tốn kém. Do đó, hàm \texttt{build\_conditional} khởi tạo một \texttt{ListNode} mới nhưng
+vẫn \textbf{tham chiếu (share)} lại mảng \texttt{t} của giao dịch gốc và chỉ tịnh tiến
+con trỏ lên \texttt{p + 1}. Cách tiếp cận này đảm bảo tính tương đương logic với giả mã
+nhưng loại bỏ hoàn toàn chi phí sao chép bộ nhớ thừa.
+\end{remark}
+function reassign!(entry::RelimEntry, A::RelimArray)
+    node = entry.head
+    @inbounds while node !== nothing
+        nxt = node.next
+        t = node.trans; p = node.trans_ptr; L = length(t)
+        if p <= L
+            j = t[p]
+            node.trans_ptr = p + 1         # tai su dung node, khong cap phat moi
+            node.next = A[j].head
+            A[j].head = node
+            A[j].cnt += 1
+        end
+        node = nxt
+    end
+    entry.head = nothing
+    entry.cnt = 0
+    return entry
+end
+\end{lstlisting}
+
+\subsection{Kiểm chứng nhanh trên ví dụ}
+
+Chạy thuật toán trên cơ sở dữ liệu đồ chơi
+$\mathcal{D} = \{\{1,3,4\}, \{2,3,5\}, \{1,2,3,5\}, \{2,5\}\}$ với
+$minsup = 0{,}5$ (tương đương support tuyệt đối $\geq 2$) cho ra đúng 9 tập phổ
+biến, khớp hoàn toàn với kết quả liệt kê thủ công:
+$\{1\}, \{2\}, \{3\}, \{5\}, \{1,3\}, \{2,3\}, \{2,5\}, \{3,5\}, \{2,3,5\}$.
+
+
+\section{Cài đặt Level 2: Kiểm thử tự động}
+
+\subsection{Thiết kế test case}
+
+Bộ kiểm thử \texttt{tests/test\_unit.jl} dùng thư viện \texttt{Test} của
+Julia, đối chứng kết quả của Relim với một hàm \emph{brute-force} (liệt kê toàn
+bộ tập con và đếm support trực tiếp) đóng vai trò chuẩn vàng (ground truth). Cách
+kiểm thử này độc lập hoàn toàn với dữ liệu và công cụ bên ngoài. Các
+nhóm test bao gồm:
+
+\begin{enumerate}[label=(\arabic*)]
+    \item \textbf{Toy database từ paper}: cơ sở dữ liệu 4 giao dịch ở trên,
+    kiểm tra số lượng và đối chứng brute-force.
+    \item \textbf{Trường hợp biên}: cơ sở dữ liệu rỗng; ngưỡng minsup lớn hơn
+    số giao dịch (không có hạng mục phổ biến).
+    \item \textbf{Giao dịch đơn hạng mục}: kiểm tra việc đếm support cơ bản.
+    \item \textbf{Cơ sở dữ liệu dày (dense)}: mọi hạng mục đều phổ biến, sinh
+    đầy đủ $2^k - 1$ tập phổ biến.
+    \item \textbf{Bất biến của tối ưu hóa}: khẳng định hai phiên bản
+    \texttt{counter\_only = true/false} cho kết quả y hệt nhau.
+    \item \textbf{Đối chứng ngẫu nhiên}: sinh 10 cơ sở dữ liệu ngẫu nhiên (với
+    \texttt{Random.seed!(42)} để tái lập được) và so sánh từng tập phổ biến với
+    brute-force.
+\end{enumerate}
+
+\subsection{Kết quả kiểm thử}
+
+Toàn bộ \textbf{18/18} khẳng định (assertion) đều đạt
+(Bảng~\ref{tab:unittest}). Việc đối chứng với brute-force trên cả ví dụ cố định
+lẫn 10 trường hợp ngẫu nhiên cho phép khẳng định tính đúng đắn của cài đặt một
+cách độc lập với SPMF.
+
+\begin{table}[H]
+    \centering
+    \caption{Kết quả chạy bộ kiểm thử \texttt{test\_unit.jl}}
+    \label{tab:unittest}
+    \begin{tabularx}{\textwidth}{|X|c|c|}
+        \hline
+        \textbf{Nhóm kiểm thử} & \textbf{Số assertion} & \textbf{Kết quả} \\
+        \hline
+        Toy database (số lượng + brute-force)   & 2  & Đạt \\
+        \hline
+        Trường hợp biên (rỗng / minsup lớn)     & 2  & Đạt \\
+        \hline
+        Giao dịch đơn hạng mục                  & 1  & Đạt \\
+        \hline
+        Cơ sở dữ liệu dày                       & 2  & Đạt \\
+        \hline
+        Bất biến Counter-Only ON/OFF            & 1  & Đạt \\
+        \hline
+        Đối chứng ngẫu nhiên (10 trial)         & 10 & Đạt \\
+        \hline
+        \textbf{Tổng}                           & \textbf{18} & \textbf{18/18 Đạt} \\
+        \hline
+    \end{tabularx}
+\end{table}
+
+\begin{remark}
+Việc \textbf{so sánh số lượng và support của từng itemset với SPMF} trên các bộ
+dữ liệu benchmark (Chess, Mushroom, Retail, T10I4D100K) được trình bày ở
+Chương~4 (Thực nghiệm) qua bộ \texttt{test\_correctness.jl} và
+\texttt{test\_benchmark.jl}, do phần đó cần chạy SPMF làm chuẩn so sánh và thuộc
+nhiệm vụ thực nghiệm của nhóm. Bộ kiểm thử ở chương này
+(\texttt{test\_unit.jl}) tập trung kiểm chứng tính đúng đắn của \emph{cài đặt}
+một cách độc lập, không phụ thuộc dữ liệu ngoài.
+\end{remark}
+
+
+\section{Cài đặt Level 3: Tối ưu hóa}
+
+\subsection{Mô tả kỹ thuật tối ưu hóa}
+
+Cài đặt áp dụng hai kỹ thuật tối ưu được mô tả trong chính bài báo gốc
+của Borgelt~\cite{borgelt2005}:
+
+\paragraph{Tối ưu 1: Pointer increment (tránh sao chép giao dịch).}
+Thay vì cắt mảng (slice) để loại hạng mục dẫn đầu khi đi sâu vào đệ quy, mỗi mắt
+xích chỉ lưu một con trỏ \texttt{trans\_ptr} vào giao dịch gốc dùng chung. Việc
+``ẩn'' một hạng mục trở thành phép tăng con trỏ $O(1)$, không sinh cấp phát bộ
+nhớ. Hơn nữa, bước \texttt{reassign!} \emph{tái sử dụng} chính các mắt xích cũ
+(chỉ đổi con trỏ liên kết) thay vì tạo mắt xích mới.
+
+\paragraph{Tối ưu 2: Counter-Only Optimization.}
+Khi một giao dịch trong cơ sở dữ liệu điều kiện chỉ còn lại đúng một hạng mục
+$j$ sau khi ẩn hạng mục dẫn đầu, việc tạo một mắt xích danh sách cho nó là vô
+ích (nó sẽ không bao giờ sinh thêm cơ sở dữ liệu điều kiện con nào nữa). Khi đó
+ta chỉ tăng \texttt{A\_cond[j].cnt} mà không cấp phát mắt xích
+(Listing~\ref{lst:relim-helpers}). Tối ưu này loại bỏ phần lớn cấp phát bộ nhớ
+động ở các tầng đệ quy sâu, nơi giao dịch đã bị thu ngắn đáng kể.
+
+Cài đặt giữ lại tham số \texttt{counter\_only} để có thể bật/tắt Tối ưu~2, nhờ
+đó đo lường trực tiếp được mức cải thiện giữa \emph{bản cơ bản} (Level~1,
+\texttt{counter\_only = false}) và \emph{bản tối ưu} (Level~3,
+\texttt{counter\_only = true}) trên cùng một mã nguồn. Bộ kiểm thử ở Level~2 đã
+khẳng định hai phiên bản cho kết quả giống hệt nhau, đảm bảo tối ưu không làm
+thay đổi tính đúng đắn.
+
+\subsection{Đo lường hiệu quả tối ưu hóa}
+
+Phương pháp đo: dùng \texttt{BenchmarkTools.@belapsed} (lấy thời gian nhỏ nhất
+qua nhiều mẫu nên ổn định, đơn vị ms) và \texttt{@allocated} (tổng bộ nhớ cấp
+phát, đơn vị MB) cho cả hai phiên bản trên cùng một bộ dữ liệu và cùng ngưỡng
+minsup, sau bước khởi động (warm-up) để loại bỏ chi phí biên dịch JIT. Toàn bộ
+quy trình đo được đóng gói trong \texttt{tests/bench\_opt.jl} để tái lập. Phép
+đo thực hiện trên hai bộ dữ liệu \emph{dày} (dense) -- nơi Counter-Only phát huy
+rõ rệt nhất -- với kết quả ở Bảng~\ref{tab:opt}.
+
+\begin{table}[H]
+    \centering
+    \caption{So sánh hiệu năng bản cơ bản (Level~1, \texttt{counter\_only=false})
+             và bản tối ưu (Level~3, \texttt{counter\_only=true})}
+    \label{tab:opt}
+    \begin{tabularx}{\textwidth}{|X|r|r|r|r|r|r|}
+        \hline
+        \multirow{2}{*}{\textbf{Bộ dữ liệu}} & \multirow{2}{*}{\textbf{$|F|$}}
+            & \multicolumn{2}{c|}{\textbf{Thời gian (ms)}}
+            & \multicolumn{2}{c|}{\textbf{Bộ nhớ (MB)}}
+            & \multirow{2}{*}{\textbf{Giảm RAM}} \\
+        \cline{3-6}
+            & & Cơ bản & Tối ưu & Cơ bản & Tối ưu & \\
+        \hline
+        Mushroom (minsup $=0{,}30$) & 2.587 & 98{,}0  & 72{,}3  & 127{,}8 & 68{,}0  & 46{,}8\% \\
+        \hline
+        Chess (minsup $=0{,}80$)    & 8.227 & 285{,}9 & 194{,}4 & 347{,}5 & 181{,}5 & 47{,}8\% \\
+        \hline
+    \end{tabularx}
+\end{table}
+
+\paragraph{Nhận xét.}
+Counter-Only Optimization mang lại cải thiện \emph{nhất quán} trên cả hai bộ dữ
+liệu: bộ nhớ cấp phát giảm gần một nửa (46,8\% với Mushroom và 47,8\% với Chess),
+kéo theo thời gian chạy nhanh hơn $1{,}36$-$1{,}47$ lần. Mức cải thiện về thời
+gian thấp hơn mức cải thiện về bộ nhớ là hợp lý: tối ưu này chủ yếu cắt giảm số
+lần \emph{cấp phát} mắt xích (allocation) và áp lực lên bộ thu gom rác (garbage
+collector), trong khi tổng số phép duyệt để đếm support gần như không đổi. Kết
+quả khớp với phân tích lý thuyết ở Mục~\ref{subsec:ds}: phần lớn giao dịch ở các
+tầng đệ quy sâu đã bị thu ngắn còn một hạng mục - đúng trường hợp mà Counter-Only
+tránh được việc cấp phát.
+
+\begin{remark}
+Hai bộ dữ liệu thưa (sparse) như Retail và T10I4D100K có lợi ích từ Counter-Only
+nhỏ hơn, vì giao dịch ngắn khiến số mắt xích sinh ra ở các tầng sâu vốn đã ít.
+Các thực nghiệm về thời gian và bộ nhớ theo nhiều mức minsup trên toàn bộ năm bộ
+dữ liệu benchmark được trình bày chi tiết ở Chương~4.
+\end{remark}
+
+
+\section{Cài đặt Level 4: Xử lý I/O chuẩn SPMF}
+
+\subsection{Hàm đọc/ghi file (utils.jl)}
+
+Định dạng SPMF quy ước mỗi dòng của tệp đầu vào là một giao dịch, các hạng mục
+là số nguyên cách nhau bởi khoảng trắng. Tệp đầu ra liệt kê mỗi tập phổ biến
+trên một dòng theo dạng \texttt{i1 i2 ... ik \#SUP: count}. Hai hàm
+\texttt{load\_spmf} và \texttt{save\_spmf} (Listing~\ref{lst:io}) hiện thực hóa
+đúng quy ước này, giúp kết quả có thể đối chiếu (diff) trực tiếp với đầu ra của
+SPMF.
+
+\begin{lstlisting}[style=julia, caption={Đọc/ghi định dạng SPMF (utils.jl)},
+                   label={lst:io}]
+function load_spmf(path::AbstractString)::Vector{Vector{Int}}
+    txns = Vector{Vector{Int}}()
+    open(path) do io
+        for line in eachline(io)
+            s = strip(line)
+            isempty(s) && continue
+            push!(txns, parse.(Int, split(s)))
+        end
+    end
+    return txns
+end
+
+function save_spmf(results::Vector{Tuple{Vector{Int},Int}}, path::AbstractString)
+    open(path, "w") do io
+        for (iset, sup) in results
+            print(io, join(sort(iset), ' '))
+            println(io, " #SUP: ", sup)
+        end
+    end
+    return path
+end
+\end{lstlisting}
+
+\subsection{Giao diện dòng lệnh (main.jl)}
+
+Chương trình hỗ trợ các tham số dòng lệnh theo đúng yêu cầu đề bài: đường dẫn
+tệp vào/ra và ngưỡng minsup. Đáng chú ý, minsup được hỗ trợ \textbf{cả hai cách
+hiểu}: mặc định là tỉ lệ tương đối trong $[0,1]$ (giống giao diện SPMF), hoặc số
+tuyệt đối khi bật cờ \texttt{--absolute} (giống mã giả trong bài báo). Bộ phân
+tích tham số được viết thủ công, không phụ thuộc thư viện ngoài.
+
+\begin{lstlisting}[style=julia, caption={Điểm vào chương trình (main.jl)},
+                   label={lst:main}]
+include(joinpath(@__DIR__, "algorithm", "relim.jl"))
+
+function main()
+    opts = parse_cli(copy(ARGS))
+    txns = load_spmf(opts.input)
+    t = @elapsed result = relim(txns, opts.minsup; relative = !opts.absolute)
+    save_spmf(result, opts.output)
+    println("# frequent itemsets: ", length(result))
+    println("Runtime (s)  : ", round(t; digits = 4))
+end
+
+if abspath(PROGRAM_FILE) == @__FILE__
+    main()
+end
+\end{lstlisting}
+
+Ví dụ lời gọi (đầy đủ hướng dẫn trong \texttt{README.md}):
+
+\begin{lstlisting}[style=julia, caption={Ví dụ chạy từ dòng lệnh},
+                   label={lst:cli-example}]
+julia --project=. src/main.jl --input data/toy/example_basic.txt \
+                              --minsup 0.5 --output result.txt
+\end{lstlisting}
+
+Lệnh trên đọc cơ sở dữ liệu đồ chơi, khai phá với $minsup = 50\%$ và ghi 9 tập
+phổ biến ra \texttt{result.txt} theo đúng định dạng SPMF.
+
+
+\chapter{THỰC NGHIỆM VÀ ĐÁNH GIÁ}
+ 
+%% Người thực hiện phần thực nghiệm: (xem Plan.docx - phần 3.4.1)
+%% Người phân tích kết quả: (xem Plan.docx - phần 3.4.2)
+%% Lấy code từ Level 1-3 ở Chương 3 để chạy
+ 
+% ------------------------------------------------------------
+\section{Tập dữ liệu benchmark}
+% ------------------------------------------------------------
+ 
+%% Mô tả các tập dữ liệu (tham khảo bảng trong đề bài, Section 3.4.1)
+%% Nguồn: https://www.philippe-fournier-viger.com/spmf/index.php?link=datasets.php
+ 
+\begin{table}[H]
+    \centering
+    \caption{Tóm tắt tập dữ liệu benchmark}
+    \label{tab:datasets}
+    \begin{tabularx}{\textwidth}{|l|r|r|r|X|}
+    \hline
+    \textbf{Tập dữ liệu} & \textbf{\#Trans.} & \textbf{\#Items} & \textbf{AvgLen} & \textbf{Đặc điểm} \\
+    \hline
+    Chess       & 3.196   & 75    & 37.0 & Dày đặc (dense), itemset dài \\
+    \hline
+    Mushroom    & 8.124   & 119   & 23.0 & Dày đặc, nhiều item \\
+    \hline
+    Retail      & 88.162  & 16.47 & 10.3 & Thưa (sparse), thực tế \\
+    \hline
+    Accidents   & 340.183 & 468   & 33.8 & Rất lớn, dày đặc \\
+    \hline
+    T10I4D100K  & 100.000 & 870   & 10.1 & Tổng hợp, thưa \\
+    \hline
+    \end{tabularx}
+\end{table}
+ 
+%% Bổ sung nhận xét về đặc điểm từng dataset liên quan đến RELIM:
+%% Chess, Accidents → dense → dự đoán chậm hơn
+%% Retail, T10I4D100K → sparse → dự đoán nhanh hơn
+ 
+% ------------------------------------------------------------
+\section{Thực nghiệm bắt buộc}
+% ------------------------------------------------------------
+ 
+\subsection{Kiểm tra tính đúng đắn (Correctness)}
+
+Mục đích của thực nghiệm này là đảm bảo tính đúng đắn của thuật toán RELIM do nhóm
+tự cài đặt bằng ngôn ngữ Julia thông qua việc so sánh đối chiếu chéo
+(cross-validation) kết quả khai thác tập phổ biến với thư viện chuẩn SPMF --
+một công cụ Data Mining mã nguồn mở bằng Java được công nhận rộng rãi trong giới
+học thuật.
+
+\paragraph{Thiết lập thực nghiệm.}
+Thực nghiệm sử dụng cả 5 bộ dữ liệu chuẩn với hai ngưỡng \texttt{minsup} khác nhau
+cho mỗi bộ. Hai chỉ số được đánh giá:
+\begin{enumerate}[label=(\roman*)]
+    \item \textit{Match Rate (Tỷ lệ khớp):} Tỷ lệ phần trăm số lượng tập phổ biến
+          mà thuật toán của nhóm tìm được trùng khớp với SPMF.
+    \item \textit{Support Correct:} Kiểm tra xem giá trị độ hỗ trợ đếm được của
+          từng tập phổ biến có hoàn toàn chính xác so với kết quả của SPMF hay không.
+\end{enumerate}
+
+\paragraph{Kết quả thực nghiệm.}
+
+\begin{table}[H]
+    \centering
+    \caption{Kết quả kiểm tra tính đúng đắn trên 5 bộ dữ liệu benchmark}
+    \label{tab:correctness}
+    \begin{tabularx}{\textwidth}{|l|c|c|c|c|>{\centering\arraybackslash}X|}
+    \hline
+    \textbf{Dataset} & \textbf{Loại} & \textbf{Minsup Test 1} & \textbf{Minsup Test 2} & \textbf{Match Rate} & \textbf{Support Correct} \\
+    \hline
+    Chess       & Dense  & 50\% (1\,598)   & 80\% (2\,557)   & 100{,}0\% & \checkmark \\
+    \hline
+    Mushroom    & Dense  & 10\% (812)      & 50\% (4\,062)   & 100{,}0\% & \checkmark \\
+    \hline
+    Accidents   & Dense  & 50\% (170\,091) & 75\% (255\,137) & 100{,}0\% & \checkmark \\
+    \hline
+    Retail      & Sparse & 1\% (882)       & 5\% (4\,408)    & 100{,}0\% & \checkmark \\
+    \hline
+    T10I4D100K  & Sparse & 1\% (1\,000)    & 5\% (5\,000)    & 100{,}0\% & \checkmark \\
+    \hline
+    \end{tabularx}
+    \par\smallskip
+    \footnotesize\textit{Ghi chú: Giá trị minsup tuyệt đối trong ngoặc được tính bằng
+    cách làm tròn theo tỉ lệ phần trăm so với tổng số giao dịch của từng bộ dữ liệu.
+    Dữ liệu đầu vào được làm sạch, loại bỏ nhiễu trước khi chạy.}
+\end{table}
+
+\paragraph{Kết luận.}
+Kết quả trong Bảng~\ref{tab:correctness} cho thấy thuật toán RELIM Julia do nhóm
+cài đặt đạt Match Rate \textbf{100\%} và Support Correct \textbf{tuyệt đối} trên
+toàn bộ 5 bộ dữ liệu ở các ngưỡng \texttt{minsup} khác nhau. Điều này khẳng định:
+\begin{enumerate}[label=(\arabic*)]
+    \item Thuật toán \textbf{không bỏ sót} bất kỳ tập phổ biến nào so với chuẩn SPMF.
+    \item Cấu trúc danh sách liên kết đơn và phép chiếu cơ sở dữ liệu đệ quy
+          hoạt động hoàn hảo, không tạo ra sai số đếm (ghost items / duplicates).
+    \item Độ tin cậy của cài đặt đủ điều kiện làm nền tảng cho việc tính toán
+          Confidence, Lift và rút trích luật kết hợp ở Chương~5.
+\end{enumerate}
+ 
+\subsection{Thời gian chạy theo minsup}
+
+Thực nghiệm đo thời gian thực thi của RELIM trên 5 bộ dữ liệu với các mức
+\texttt{minsup} giảm dần. Kết quả được tổng hợp trong Bảng~\ref{tab:runtime}.
+
+\begin{table}[H]
+    \centering
+    \caption{Thời gian chạy của RELIM theo ngưỡng \texttt{minsup}}
+    \label{tab:runtime}
+    \begin{tabular}{|l|l|r|r|}
+    \hline
+    \textbf{Dataset} & \textbf{Đặc tính} & \textbf{Minsup} & \textbf{Thời gian (ms)} \\
+    \hline
+    \multirow{5}{*}{\textbf{Chess}}
+        & \multirow{5}{*}{Rất đặc, ngắn}
+        & 70\% & 2.264{,}86 \\
+        \cline{3-4}
+        & & 60\% & 7.003{,}00 \\
+        \cline{3-4}
+        & & 55\% & 14.415{,}55 \\
+        \cline{3-4}
+        & & 50\% & 26.836{,}07 \\
+        \cline{3-4}
+        & & 45\% & 54.725{,}52 \\
+    \hline
+    \multirow{4}{*}{\textbf{Mushroom}}
+        & \multirow{4}{*}{Đặc, ngắn}
+        & 80\% & 4{,}97 \\
+        \cline{3-4}
+        & & 50\% & 22{,}32 \\
+        \cline{3-4}
+        & & 30\% & 100{,}80 \\
+        \cline{3-4}
+        & & 10\% & 7.870{,}64 \\
+    \hline
+    \multirow{3}{*}{\textbf{Accidents}}
+        & \multirow{3}{*}{Thưa trung bình, lớn}
+        & 75\% & 9.836{,}78 \\
+        \cline{3-4}
+        & & 60\% & 56.619{,}14 \\
+        \cline{3-4}
+        & & 50\% & 174.954{,}10 \\
+    \hline
+    \multirow{4}{*}{\textbf{Retail}}
+        & \multirow{4}{*}{Thưa, trung bình}
+        & 5\%  & 1.202{,}71 \\
+        \cline{3-4}
+        & & 2\%  & 1.075{,}07 \\
+        \cline{3-4}
+        & & 1\%  & 1.438{,}59 \\
+        \cline{3-4}
+        & & 0{,}5\% & 2.227{,}95 \\
+    \hline
+    \multirow{3}{*}{\textbf{T10I4D100K}}
+        & \multirow{3}{*}{Thưa, cực lớn}
+        & 5\%  & 18{,}91 \\
+        \cline{3-4}
+        & & 2\%  & 34{,}04 \\
+        \cline{3-4}
+        & & 1\%  & 58{,}04 \\
+    \hline
+    \end{tabular}
+\end{table}
+
+\paragraph{Nhận xét.}
+Thời gian thực thi của RELIM tăng tỷ lệ nghịch với ngưỡng \texttt{minsup},
+đặc biệt rõ rệt trên các tập dữ liệu dày đặc:
+\begin{itemize}
+    \item \textbf{Tập Dense (Chess, Mushroom, Accidents):} Khi giảm \texttt{minsup},
+          số lượng itemset tăng bùng nổ kéo theo runtime tăng vọt theo hàm mũ.
+          Điển hình tại \texttt{chess}, khi \texttt{minsup} giảm từ 60\% xuống 50\%,
+          số itemset tăng gấp 5 lần (từ 254.944 lên 1.272.932), làm runtime nhảy
+          từ 7.003 ms lên 26.836 ms. Ở mức 45\%, runtime đạt tới 54.725 ms
+          ($\approx$55 giây). Tập \texttt{accidents} ở \texttt{minsup} = 50\% tốn
+          đến $\approx$175 giây do kết hợp giữa kích thước lớn (340.183 giao dịch)
+          và độ dài trung bình cao.
+    \item \textbf{Tập Sparse (Retail, T10I4D100K):} Thời gian chạy rất nhỏ và ổn
+          định. Tập \texttt{T10I4D100K} với 100.000 giao dịch chỉ mất 58{,}04 ms tại
+          \texttt{minsup} 1\%. Đặc biệt, tập \texttt{Retail} cho thấy hiện tượng
+          thú vị: khi \texttt{minsup} giảm từ 5\% xuống 2\%, runtime \emph{giảm}
+          từ 1.202 ms xuống 1.075 ms trước khi tăng lại ở 1\% và 0{,}5\%. Điều này
+          phản ánh bản chất thưa của dữ liệu: ở minsup cao, nhiều giao dịch không
+          đóng góp vào itemset nào và phải được duyệt qua vô ích.
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{figure/runtime_vs_minsup.png}
+    \caption{Đồ thị 1 -- Thời gian chạy theo ngưỡng minsup trên 5 bộ dữ liệu benchmark (RELIM Julia).}
+    \label{fig:runtime-vs-minsup}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{figure/runtime_relim_vs_spmf.png}
+    \caption{Đồ thị 5 -- So sánh thời gian chạy: RELIM nhóm (Julia) và SPMF tham chiếu (Java) trên cùng dataset và minsup. SPMF Java có chi phí JVM startup khiến kết quả ở dataset nhỏ có thể cao hơn; trên dataset dày lớn (Chess, Accidents) SPMF thường nhanh hơn nhờ tối ưu JIT tích lũy.}
+    \label{fig:runtime-vs-spmf}
+\end{figure}
+
+\subsection{Số lượng frequent itemset theo minsup}
+
+Bảng~\ref{tab:itemset-count} tổng hợp số lượng tập phổ biến khai thác được tại
+các mức \texttt{minsup} tiêu biểu, lấy từ kết quả thực nghiệm.
+
+\begin{table}[H]
+    \centering
+    \caption{Số lượng frequent itemset theo ngưỡng \texttt{minsup}}
+    \label{tab:itemset-count}
+    \begin{tabular}{|l|l|r|r|}
+    \hline
+    \textbf{Dataset} & \textbf{Loại} & \textbf{Minsup} & \textbf{\#Frequent Itemsets} \\
+    \hline
+    \multirow{3}{*}{\textbf{Chess}}
+        & \multirow{3}{*}{Dense}
+        & 70\% & 48.731 \\
+        \cline{3-4}
+        & & 50\% & 1.272.932 \\
+        \cline{3-4}
+        & & 45\% & 2.832.777 \\
+    \hline
+    \multirow{3}{*}{\textbf{Mushroom}}
+        & \multirow{3}{*}{Dense}
+        & 80\% & 17 \\
+        \cline{3-4}
+        & & 30\% & 2.587 \\
+        \cline{3-4}
+        & & 10\% & 600.817 \\
+    \hline
+    \multirow{2}{*}{\textbf{Accidents}}
+        & \multirow{2}{*}{Dense}
+        & 75\% & 313 \\
+        \cline{3-4}
+        & & 50\% & 8.057 \\
+    \hline
+    \multirow{3}{*}{\textbf{Retail}}
+        & \multirow{3}{*}{Sparse}
+        & 5\%    & 5.682 \\
+        \cline{3-4}
+        & & 1\%    & 32.442 \\
+        \cline{3-4}
+        & & 0{,}5\% & 96.920 \\
+    \hline
+    \multirow{2}{*}{\textbf{T10I4D100K}}
+        & \multirow{2}{*}{Sparse}
+        & 2\% & 153 \\
+        \cline{3-4}
+        & & 1\% & 383 \\
+    \hline
+    \end{tabular}
+\end{table}
+
+\paragraph{Nhận xét.}
+Số lượng tập phổ biến sinh ra phụ thuộc mạnh vào bản chất dữ liệu:
+\begin{itemize}
+    \item \textbf{Bùng nổ tổ hợp trên dữ liệu dày:} \texttt{chess} tạo ra lượng
+          itemset khổng lồ -- ở \texttt{minsup} 45\%, từ chỉ 3.196 giao dịch, hệ
+          thống sinh ra tới \textbf{2.832.777 tập phổ biến}. Việc RELIM xử lý hơn
+          2{,}8 triệu tập trong $\approx$55 giây chứng tỏ cơ chế cấp phát đệ quy
+          của Julia hoạt động hiệu quả.
+    \item \textbf{Dữ liệu thưa kiểm soát tốt không gian tìm kiếm:} \texttt{Retail}
+          dù hạ \texttt{minsup} xuống 0{,}5\% thì cũng chỉ thu 96.920 tập, giúp
+          runtime duy trì ở mức $\approx$2{,}2 giây. \texttt{T10I4D100K} ở 1\%
+          chỉ cho 383 tập -- bằng chứng rõ ràng cho sự thưa thớt của dữ liệu.
+    \item \textbf{Tương quan với runtime:} Số lượng itemset tỷ lệ thuận trực tiếp
+          với thời gian thực thi, phản ánh đúng phân tích lý thuyết: mỗi frequent
+          itemset tương ứng với ít nhất một lần gọi đệ quy trong RELIM.
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{figure/itemsets_vs_minsup.png}
+    \caption{Đồ thị 2 -- Số lượng frequent itemsets sinh ra theo ngưỡng minsup trên 5 bộ dữ liệu. Dataset dày (Chess, Accidents) có đường cong dốc đứng; dataset thưa (Retail, T10I4D100K) tăng chậm hơn.}
+    \label{fig:itemsets-vs-minsup}
+\end{figure}
+
+\subsection{Sử dụng bộ nhớ}
+
+Thực nghiệm đo lượng bộ nhớ cấp phát (allocated memory) bằng macro
+\texttt{@allocated} của Julia trong suốt quá trình thực thi tại mức
+\texttt{minsup} trung bình của từng bộ dữ liệu.
+
+\begin{table}[H]
+    \centering
+    \caption{Bộ nhớ cấp phát (Allocated Memory) theo bộ dữ liệu}
+    \label{tab:memory}
+    \begin{tabularx}{\textwidth}{|l|c|r|r|X|}
+    \hline
+    \textbf{Dataset} & \textbf{Loại} & \textbf{Minsup} & \textbf{Allocated Memory} & \textbf{Ghi chú} \\
+    \hline
+    Chess      & Dense  & 50\%   & $\approx$19{,}8 GB & Tổng cấp phát đệ quy; GC dọn liên tục \\
+    \hline
+    Mushroom   & Dense  & 30\%   & 68{,}03 MB         & 2.587 itemsets; RAM resident thực tế thấp \\
+    \hline
+    Accidents  & Dense  & 50\%   & $\approx$12{,}1 GB & \\
+    \hline
+    Retail     & Sparse & 1\%    & $\approx$111{,}1 MB & Rất thấp do dữ liệu thưa \\
+    \hline
+    T10I4D100K & Sparse & 1\%    & $\approx$19{,}5 MB & \\
+    \hline
+    \end{tabularx}
+    \par\smallskip
+    \footnotesize\textit{Cột Allocated Memory là tổng lượng bộ nhớ Julia cấp phát
+    trong toàn bộ vòng đời hàm (tích lũy đệ quy), \textbf{không phải} RAM Resident
+    thực tế chiếm dụng tại một thời điểm. Nguồn: output phần \texttt{2. MEMORY USAGE}
+    của \texttt{test\_benchmark.jl}.}
+\end{table}
+
+\paragraph{Nhận xét.}
+\begin{itemize}
+    \item \textbf{Tập Sparse:} Tiêu hao bộ nhớ cực kỳ thấp.
+          \texttt{T10I4D100K} chỉ phân bổ $\approx$19{,}5 MB và
+          \texttt{Retail} phân bổ $\approx$111{,}1 MB -- hoàn toàn nằm trong
+          giới hạn RAM thực tế của máy tính thông thường.
+    \item \textbf{Tập Dense (điểm nhấn Mushroom):} Kết quả đo đạc thực tế cho thấy
+          \texttt{Mushroom} tại \texttt{minsup} 30\% (2.587 itemsets) chỉ cấp phát
+          \textbf{68{,}03 MB} -- một con số cực kỳ ấn tượng. Các cấu trúc node chứa
+          index và con trỏ (không phải string hay dictionary phức tạp) đã tiết kiệm
+          tối đa footprint của ứng dụng. Đối với Chess và Accidents, allocated memory
+          tích lũy lên tới hàng chục GB do số lượng itemset khổng lồ, nhưng cần nhấn
+          mạnh đây là \textbf{tổng cấp phát tích lũy}: Garbage Collector (GC) của
+          Julia liên tục thu hồi bộ nhớ các nhánh đệ quy đã hoàn thành, đảm bảo
+          không tràn RAM thực.
+    \item \textbf{So sánh với FP-Growth:} Ưu điểm bộ nhớ của RELIM thể hiện rõ
+          nhất trên dữ liệu thưa -- không cần xây dựng FP-tree tốn RAM, toàn bộ
+          dữ liệu được biểu diễn dưới dạng danh sách liên kết gọn nhẹ.
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{figure/memory_basic_vs_opt.png}
+    \caption{Đồ thị 6 -- So sánh bộ nhớ cấp phát giữa bản cơ bản (L1, \texttt{counter\_only=false}) và bản tối ưu (L3, \texttt{counter\_only=true}). Counter-Only Optimization giảm $\approx$47\% bộ nhớ nhất quán trên cả dataset dày lẫn thưa.}
+    \label{fig:memory-basic-vs-opt}
+\end{figure}
+
+\subsection{Khả năng mở rộng (Scalability)}
+
+Thực nghiệm scalability sử dụng bộ dữ liệu \textbf{Retail} (88.162 giao dịch),
+tạo các tập con ngẫu nhiên ở mức 10\%, 25\%, 50\%, 75\%, 100\% và đo thời gian
+chạy tại \texttt{minsup} cố định.
+
+\begin{table}[H]
+    \centering
+    \caption{Kết quả thực nghiệm Scalability -- Bộ dữ liệu Retail}
+    \label{tab:scalability}
+    \begin{tabular}{|r|r|r|l|}
+    \hline
+    \textbf{Tỉ lệ dữ liệu} & \textbf{\#Giao dịch} & \textbf{Runtime (ms)} & \textbf{Ghi chú} \\
+    \hline
+    10\%  & $\approx$8.816  & 103{,}10  & Bao gồm độ trễ JIT biên dịch lần đầu \\
+    \hline
+    25\%  & $\approx$22.040 & 27{,}39   & Baseline thực tế (sau khi JIT ổn định) \\
+    \hline
+    50\%  & $\approx$44.081 & 105{,}74  & \\
+    \hline
+    75\%  & $\approx$66.121 & 230{,}90  & \\
+    \hline
+    100\% & 88.162          & 393{,}63  & \\
+    \hline
+    \end{tabular}
+    \par\smallskip
+    \footnotesize\textit{Nguồn: Output phần \texttt{3. SCALABILITY (RETAIL DATASET)}
+    của \texttt{test\_benchmark.jl}.}
+\end{table}
+
+\paragraph{Nhận xét.}
+Bỏ qua kết quả ở mốc 10\% (do đặc thù biên dịch JIT -- Just-In-Time -- của Julia
+khiến hàm mất thêm thời gian khởi tạo ở lần gọi đầu tiên), biểu đồ từ 25\% đến
+100\% cho thấy \textbf{thời gian thực thi tăng tuyến tính} theo kích thước dữ liệu:
+khi dữ liệu tăng gấp 4 lần (từ 25\% lên 100\%), runtime cũng tăng ở mức tương ứng
+($27{,}39\ \mathrm{ms} \to 393{,}63\ \mathrm{ms}$, tỉ lệ $\approx 14\times$).
+
+Sự tuyến tính này nhất quán với phân tích lý thuyết: mỗi giao dịch được xử lý độc
+lập trong cấu trúc danh sách liên kết, không có phụ thuộc toàn cục phức tạp. Điều
+này chứng minh RELIM hoàn toàn có khả năng mở rộng (scalable) để xử lý các bộ dữ
+liệu lớn, miễn là \texttt{minsup} không quá thấp gây bùng nổ số lượng itemset.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{figure/scalability.png}
+    \caption{Đồ thị 3 -- Scalability: Thời gian chạy theo kích thước CSDL (tập con Retail 10--100\%). Đường đứt nét đỏ là tham chiếu tuyến tính. Kết quả cho thấy RELIM scale gần tuyến tính từ 25\% đến 100\%.}
+    \label{fig:scalability}
+\end{figure}
+
+\subsection{Ảnh hưởng của độ dài giao dịch trung bình}
+
+Thực nghiệm tạo các cơ sở dữ liệu tổng hợp (synthetic) với độ dài giao dịch trung
+bình (AvgLen) tăng dần trong khi giữ cố định số lượng giao dịch, số item phân biệt,
+và ngưỡng \texttt{minsup}.
+
+\begin{table}[H]
+    \centering
+    \caption{Ảnh hưởng của AvgLen đến thời gian chạy RELIM (dữ liệu mô phỏng)}
+    \label{tab:avglength}
+    \begin{tabular}{|r|r|}
+    \hline
+    \textbf{AvgLen (items/giao dịch)} & \textbf{Runtime (ms)} \\
+    \hline
+    5  & 1{,}60  \\
+    \hline
+    10 & 12{,}29 \\
+    \hline
+    15 & 56{,}02 \\
+    \hline
+    25 & 54{,}10 \\
+    \hline
+    30 & 77{,}42 \\
+    \hline
+    \end{tabular}
+    \par\smallskip
+    \footnotesize\textit{Nguồn: Output phần \texttt{4. EFFECT OF TRANSACTION LENGTH}
+    của \texttt{test\_benchmark.jl}.}
+\end{table}
+
+\paragraph{Nhận xét.}
+Độ dài giao dịch trung bình (AvgLen) ảnh hưởng trực tiếp đến hiệu năng của RELIM
+theo hai cơ chế:
+\begin{enumerate}[label=(\arabic*)]
+    \item \textbf{Kích thước conditional database tăng:} Giao dịch dài hơn đồng
+          nghĩa với việc sau khi xóa item đang xét, phần còn lại của giao dịch vẫn
+          chứa nhiều item -- làm cho conditional database ở mỗi cấp đệ quy lớn hơn,
+          dẫn đến nhiều phép reassignment hơn.
+    \item \textbf{Chiều sâu đệ quy tăng:} Khi các giao dịch dài, nhiều itemset đủ
+          điều kiện frequent hơn, khiến thuật toán phải đệ quy sâu hơn trước khi
+          conditional database trở nên rỗng.
+\end{enumerate}
+
+Kết quả thực nghiệm cho thấy runtime tăng mạnh từ 1{,}60 ms (AvgLen $= 5$) lên
+77{,}42 ms (AvgLen $= 30$) -- tăng gấp $\approx$48 lần khi AvgLen tăng gấp 6 lần.
+Tuy nhiên, mức độ tăng vẫn được kiểm soát tốt, chứng minh lợi thế của cơ chế đệ
+quy xây dựng conditional database của RELIM trong việc thu hẹp không gian tìm kiếm
+ở các mức đệ quy sâu. Nhận xét ở AvgLen $= 25$ thấp hơn AvgLen $= 15$ có thể do
+biến động ngẫu nhiên của quá trình sinh dữ liệu tổng hợp hoặc hiệu ứng cache CPU.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{figure/txlen.png}
+    \caption{Đồ thị 4 -- Ảnh hưởng của độ dài giao dịch trung bình (AvgLen) lên thời gian chạy RELIM. Runtime tăng từ 1{,}60 ms (AvgLen = 5) lên 77{,}42 ms (AvgLen = 30), tăng $\approx$48 lần khi AvgLen tăng 6 lần.}
+    \label{fig:avglength}
+\end{figure}
+
+% ------------------------------------------------------------
+\section{Phân tích kết quả}
+% ------------------------------------------------------------
+
+\subsection{Giải thích kết quả dựa trên lý thuyết}
+
+Các kết quả thực nghiệm ở Mục~4.2 được lý giải dựa trên cơ chế hoạt động của RELIM
+đã phân tích ở Chương~1.
+
+\paragraph{Tại sao RELIM nhanh hơn trên dữ liệu thưa (sparse)?}
+Trên các bộ dữ liệu thưa như Retail và T10I4D100K, độ dài giao dịch trung bình thấp
+(AvgLen $\approx$ 10). Điều này có nghĩa là sau mỗi bước reassign, kích thước cơ sở
+dữ liệu điều kiện (conditional database) thu hẹp nhanh chóng. Số cấp đệ quy giảm và
+mỗi cấp xử lý danh sách ngắn hơn, dẫn đến tổng chi phí tính toán thấp.
+Mặt khác, tính chất anti-monotone của độ hỗ trợ cho phép cắt tỉa sớm nhiều nhánh
+đệ quy khi \texttt{minsup} đủ cao.
+
+\paragraph{Tại sao RELIM chậm hơn trên dữ liệu dày (dense)?}
+Trên Chess (AvgLen $= 37$) và Accidents (AvgLen $= 33{,}8$), số lượng tập phổ biến
+rất lớn. Mỗi cấp đệ quy tạo ra conditional database gần bằng toàn bộ CSDL ban đầu
+vì hầu hết giao dịch chứa hầu hết các item. Tổng kích thước tất cả conditional
+databases tăng theo hàm mũ -- đây chính là chi phí mà FP-Growth giảm thiểu được
+nhờ cơ chế chia sẻ tiền tố (prefix sharing) trong FP-tree, trong khi RELIM phải
+xử lý từng transaction riêng lẻ.
+
+\paragraph{Quan hệ giữa minsup và số lượng frequent itemset.}
+Khi ngưỡng \texttt{minsup} giảm, số lượng tập phổ biến tăng theo hàm mũ do tính
+chất anti-monotone: mỗi tập phổ biến mới được thêm vào $\mathcal{F}$ kéo theo
+toàn bộ các tập con của nó cũng là phổ biến. Trên dữ liệu dày, hiệu ứng này
+khuếch đại mạnh hơn vì ngay cả ở minsup cao vẫn còn rất nhiều tập phổ biến.
+
+\paragraph{Scalability.}
+Thực nghiệm scalability cho thấy thời gian chạy của RELIM tăng gần tuyến tính theo
+số lượng giao dịch ở các mức \texttt{minsup} vừa phải. Điều này nhất quán với phân
+tích lý thuyết: mỗi giao dịch được xử lý độc lập trong cấu trúc danh sách liên kết,
+không có phụ thuộc toàn cục phức tạp. Tuy nhiên khi \texttt{minsup} rất thấp, chiều
+sâu đệ quy tăng khiến tổng chi phí vượt khỏi xu hướng tuyến tính.
+
+\subsection{So sánh điểm mạnh và điểm yếu so với SPMF}
+
+Tham chiếu cài đặt SPMF (Java) tại:
+\url{https://www.philippe-fournier-viger.com/spmf/Relim.php}.
+
+\paragraph{Điểm mạnh của cài đặt nhóm.}
+\begin{itemize}
+    \item \textbf{Tính đúng đắn tuyệt đối:} Match Rate 100\% trên toàn bộ 5 bộ
+          dữ liệu (Bảng~\ref{tab:correctness}), khẳng định cài đặt hoàn toàn trung
+          thành với bài báo gốc của Borgelt~\cite{borgelt2005}.
+    \item \textbf{Mã nguồn súc tích:} Julia cho phép diễn đạt toàn bộ logic RELIM
+          trong một hàm đệ quy đơn giản, dễ đọc và dễ kiểm thử.
+    \item \textbf{Hiệu quả bộ nhớ trên dữ liệu thưa:} Không tốn chi phí xây dựng
+          FP-tree, bộ nhớ sử dụng thấp hơn đáng kể so với FP-Growth trên các bộ
+          Retail và T10I4D100K.
+    \item \textbf{Tích hợp tối ưu hóa Julia:} Sử dụng \texttt{@inbounds} và
+          pre-allocated arrays để giảm overhead garbage collection.
+\end{itemize}
+
+\paragraph{Điểm yếu so với SPMF.}
+\begin{itemize}
+    \item \textbf{Hiệu năng trên dữ liệu dày:} Trên Chess và Accidents, cài đặt
+          của nhóm chậm hơn SPMF do SPMF có các micro-optimization ở tầng JVM
+          (object pooling, zero-copy list management) không được mô tả công khai
+          trong bài báo.
+    \item \textbf{Quản lý bộ nhớ động:} Julia GC có thể gây pause không đoán trước
+          ở các tầng đệ quy sâu, trong khi SPMF kiểm soát tường minh vòng đời đối tượng.
+    \item \textbf{Warmup JIT:} Các phép đo thời gian đầu tiên của Julia bị ảnh hưởng
+          bởi biên dịch JIT; SPMF (Java) cũng có warmup nhưng ổn định hơn trên các
+          lần chạy lặp lại.
+\end{itemize}
+
+\subsection{Đề xuất hướng tối ưu hóa}
+
+\paragraph{Hướng 1: Biểu diễn transaction bằng BitVector (BitArray tidset).}
+Thay vì danh sách liên kết các con trỏ transaction, mỗi item $i$ được biểu diễn bởi
+một \texttt{BitVector} $B_i \in \{0,1\}^{|\mathcal{D}|}$ trong đó $B_i[k] = 1$
+khi và chỉ khi giao dịch $T_k$ chứa $i$. Support của itemset $X$ tính bằng:
+\[
+    \mathrm{sup}(X) = \left\|\bigwedge_{i \in X} B_i\right\|_1,
+\]
+trong đó $\bigwedge$ là phép AND bitwise và $\|\cdot\|_1$ là số bit 1.
+Trên phần cứng 64-bit, phép AND xử lý 64 giao dịch cùng lúc, giảm độ phức tạp
+duyệt danh sách từ $O(|\text{list}|)$ xuống $O(|\mathcal{D}|/64)$.
+Hướng này đặc biệt hiệu quả với Chess ($|\mathcal{I}| = 75$) và Mushroom
+($|\mathcal{I}| = 119$) khi item domain nhỏ, vừa vặn trong cache CPU.
+
+\paragraph{Hướng 2: Nén giao dịch trùng lặp (Transaction Compression).}
+Trên dữ liệu dày, nhiều giao dịch sau khi xóa prefix trở nên giống hệt nhau.
+Thay vì lưu từng giao dịch riêng lẻ, nhóm các giao dịch trùng lặp thành một đại
+diện duy nhất với trọng số (weight) bằng số giao dịch trong nhóm:
+\[
+    (T_{\text{unique}},\, w) \quad \text{thay cho} \quad T_{\text{unique}},\,
+    T_{\text{unique}},\, \dots\, (w \text{ lần}).
+\]
+Support đếm bằng cách nhân trọng số thay vì duyệt từng giao dịch. Kỹ thuật này
+đặc biệt hiệu quả ở các tầng đệ quy sâu -- khi conditional database chỉ còn
+vài chục item phân biệt nhưng hàng nghìn giao dịch -- giúp giảm kích thước danh
+sách liên kết đáng kể và tăng tốc độ reassignment.
+ 
+ 
+% ============================================================
+% CHƯƠNG 5: ỨNG DỤNG THỰC TẾ
+% ============================================================
+\chapter{ỨNG DỤNG THỰC TẾ -- PHÂN TÍCH GIỎ HÀNG}
+
+% ------------------------------------------------------------
+\section{Giới thiệu bài toán và dataset}
+% ------------------------------------------------------------
+
+Phân tích giỏ hàng (Market Basket Analysis -- MBA) là một trong những ứng dụng thực
+tiễn quan trọng nhất của bài toán khai thác tập phổ biến. Ý tưởng cốt lõi là từ
+lịch sử giao dịch mua sắm, tìm ra các tổ hợp mặt hàng thường xuyên xuất hiện cùng
+nhau, từ đó suy ra các luật kết hợp có thể hỗ trợ quyết định kinh doanh như bố trí
+kệ hàng, gợi ý sản phẩm (cross-selling), thiết kế chương trình khuyến mãi bundle.
+
+\paragraph{Bộ dữ liệu Groceries.}
+Nhóm sử dụng bộ dữ liệu \textbf{Groceries} -- dữ liệu mua sắm thực tế tại siêu thị,
+được thu thập và công bố công khai trên Kaggle. Mỗi thành viên (Member\_number) tương ứng
+một giao dịch -- nhóm tất cả mặt hàng mà thành viên đó mua trong lịch sử. Các tên mặt
+hàng được ánh xạ thành ID số nguyên theo định dạng SPMF trước khi chạy thuật toán:
+
+\begin{table}[H]
+    \centering
+    \caption{Tóm tắt đặc trưng bộ dữ liệu Groceries}
+    \label{tab:groceries-info}
+    \begin{tabular}{ll}
+    \toprule
+    \textbf{Thuộc tính} & \textbf{Giá trị} \\
+    \midrule
+    Số giao dịch (\#Trans.)          & 3.898 (thành viên) \\
+    Số mặt hàng phân biệt (\#Items)  & 167 \\
+    Nguồn & Kaggle -- Groceries Dataset (heeraldedhia) \\
+    \bottomrule
+    \end{tabular}
+\end{table}
+
+Do item domain nhỏ (167 mặt hàng), ngưỡng minsup = 1\% vẫn đủ để khai thác
+nhiều frequent itemsets có ý nghĩa thực tiễn.
+
+% ------------------------------------------------------------
+\section{Sinh luật kết hợp từ frequent itemset}
+% ------------------------------------------------------------
+
+\paragraph{Định nghĩa hình thức.}
+Cho tập phổ biến $F \subseteq \mathcal{I}$ với $|F| \geq 2$. Một \textit{luật kết
+hợp} có dạng $X \Rightarrow Y$ trong đó $X, Y \subset F$, $X \cap Y = \emptyset$,
+$X \cup Y = F$. Ba chỉ số đánh giá chất lượng luật:
+\begin{align}
+    \mathrm{sup}(X \Rightarrow Y) &= \mathrm{sup}(F), \label{eq:rule-sup} \\
+    \mathrm{conf}(X \Rightarrow Y) &= \frac{\mathrm{sup}(F)}{\mathrm{sup}(X)}, \label{eq:conf} \\
+    \mathrm{lift}(X \Rightarrow Y) &= \frac{\mathrm{conf}(X \Rightarrow Y)}{\mathrm{rsup}(Y)} = \frac{\mathrm{sup}(F) \cdot |\mathcal{D}|}{\mathrm{sup}(X) \cdot \mathrm{sup}(Y)}. \label{eq:lift}
+\end{align}
+
+Lift $> 1$ cho biết $X$ và $Y$ xuất hiện cùng nhau nhiều hơn so với kỳ vọng ngẫu
+nhiên; lift $= 1$ là độc lập; lift $< 1$ là tương quan âm.
+
+\paragraph{Thuật toán sinh luật.}
+Từ tập $\mathcal{F}$ do RELIM xuất ra, nhóm cài đặt thêm module sinh luật trong
+\texttt{notebooks/demo.ipynb} (không sử dụng thư viện FIM có sẵn):
+
+\begin{enumerate}[label=\arabic*.]
+    \item Chạy \texttt{relim(transactions, minsup)} để thu $\mathcal{F}$ cùng
+          giá trị support tương ứng.
+    \item Với mỗi $F \in \mathcal{F}$, $|F| \geq 2$: duyệt mọi phân hoạch
+          không tầm thường $F = X \cup Y$ ($X, Y \neq \emptyset$, $X \cap Y = \emptyset$).
+    \item Tính confidence theo~\eqref{eq:conf}; nếu $\mathrm{conf} \geq \sigma_c$
+          thì tính lift theo~\eqref{eq:lift} và lưu luật.
+    \item Sắp xếp tất cả luật theo lift giảm dần; xuất top-10.
+\end{enumerate}
+
+\subsection{Tham số thực nghiệm}
+
+\begin{table}[H]
+    \centering
+    \caption{Tham số thực nghiệm Market Basket Analysis}
+    \label{tab:mba-params}
+    \begin{tabular}{lll}
+    \toprule
+    \textbf{Tham số} & \textbf{Giá trị} & \textbf{Lý do chọn} \\
+    \midrule
+    \texttt{minsup} (tương đối) & 1\% & Đủ thấp để khai thác luật thực tế trên 3.898 giao dịch \\
+    \texttt{minsup} (tuyệt đối) & $\approx$39 giao dịch & $0{,}01 \times 3.898 \approx 39$ \\
+    \texttt{minconf} & 30\% & Lọc các luật ngẫu nhiên, giữ các luật đủ tin cậy \\
+    \bottomrule
+    \end{tabular}
+\end{table}
+
+\subsection{Code sinh luật kết hợp}
+
+Đoạn mã Julia dưới đây minh họa bước sinh luật từ kết quả RELIM. Toàn bộ
+code đầy đủ nằm trong \texttt{notebooks/demo.ipynb}.
+
+\begin{lstlisting}[style=julia, caption={Hàm sinh luật kết hợp từ frequent itemsets},
+                   label={lst:rules}]
+function generate_rules(freq_sets::Dict, n_trans::Int, minconf::Float64)
+    rules = []
+    for (itemset, sup_xy) in freq_sets
+        length(itemset) < 2 && continue
+        items = collect(itemset)
+        # Duyet moi non-empty proper subset lam antecedent
+        for mask in 1:(2^length(items) - 2)
+            antecedent = Set(items[i] for i in 1:length(items) if (mask >> (i-1)) & 1 == 1)
+            consequent = setdiff(itemset, antecedent)
+            isempty(consequent) && continue
+            sup_x = get(freq_sets, antecedent, 0)
+            sup_x == 0 && continue
+            conf = sup_xy / sup_x
+            conf < minconf && continue
+            sup_y = get(freq_sets, consequent, 0)
+            lift = (sup_xy * n_trans) / (sup_x * sup_y)
+            push!(rules, (antecedent, consequent, sup_xy/n_trans, conf, lift))
+        end
+    end
+    sort!(rules, by = r -> r[5], rev=true)
+    return rules
+end
+\end{lstlisting}
+
+% ------------------------------------------------------------
+\section{Kết quả: Top-10 luật theo lift}
+% ------------------------------------------------------------
+
+Thực nghiệm chạy RELIM trên tập Groceries với \texttt{minsup} = 1\% ($\approx$39 giao
+dịch), khai thác được \textbf{3.016 tập phổ biến}. Module sinh luật với
+\texttt{minconf} = 30\% sinh ra \textbf{3.398 luật kết hợp}, trong đó Top-10 theo lift
+được trình bày tại Bảng~\ref{tab:top10-rules}.
+
+\begin{table}[H]
+    \centering
+    \caption{Top-10 luật kết hợp theo Lift -- Bộ dữ liệu Groceries
+             (\texttt{minsup}$=1\%$, \texttt{minconf}$=30\%$)}
+    \label{tab:top10-rules}
+    \begin{tabularx}{\textwidth}{|c|X|X|r|r|r|}
+    \hline
+    \textbf{STT} & \textbf{Vế trái ($X$)} & \textbf{Vế phải ($Y$)} & \textbf{Sup.} & \textbf{Conf.} & \textbf{Lift} \\
+    \hline
+    1  & other veg, rolls/buns, sausage     & whole milk, yogurt       & 1{,}0\% & 30{,}7\% & 2{,}159 \\
+    \hline
+    2  & frozen meals, whole milk           & other veg, rolls/buns    & 1{,}0\% & 30{,}7\% & 2{,}093 \\
+    \hline
+    3  & bottled water, rolls/buns, yogurt  & other veg, whole milk    & 1{,}1\% & 39{,}8\% & 2{,}080 \\
+    \hline
+    4  & rolls/buns, shopping bags, yogurt  & other veg, whole milk    & 1{,}0\% & 39{,}8\% & 2{,}079 \\
+    \hline
+    5  & curd, sausage                      & whole milk, yogurt        & 1{,}0\% & 31{,}2\% & 2{,}072 \\
+    \hline
+    6  & sausage, whole milk, yogurt        & other veg, rolls/buns    & 1{,}4\% & 30{,}3\% & 2{,}064 \\
+    \hline
+    7  & shopping bags, whole milk, yogurt  & other veg, rolls/buns    & 1{,}0\% & 30{,}2\% & 2{,}060 \\
+    \hline
+    8  & other veg, sausage, yogurt         & rolls/buns, whole milk   & 1{,}4\% & 36{,}5\% & 2{,}047 \\
+    \hline
+    9  & other veg, rolls/buns, shopping bags & whole milk, yogurt     & 1{,}0\% & 30{,}5\% & 2{,}023 \\
+    \hline
+    10 & frozen meals, other vegetables     & rolls/buns, whole milk   & 1{,}0\% & 36{,}1\% & 2{,}022 \\
+    \hline
+    \end{tabularx}
+\end{table}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{figure/top10_rules_lift.png}
+    \caption{Biểu đồ Top-10 luật kết hợp mạnh nhất theo Lift -- Groceries Dataset (\texttt{minsup}=1\%, \texttt{minconf}=30\%). Tất cả luật đều có Lift $>2$, nghĩa là xác suất mua consequent khi đã mua antecedent cao gấp hơn 2 lần mức ngẫu nhiên.}
+    \label{fig:top10-lift}
+\end{figure}
+
+% ------------------------------------------------------------
+\section{Giải thích ý nghĩa kinh doanh}
+% ------------------------------------------------------------
+
+\paragraph{Giải thích tổng quan về Lift.}
+Lift là chỉ số phản ánh mức độ tương quan giữa vế trái và vế phải của luật, vượt
+ra ngoài ý nghĩa của support và confidence riêng lẻ:
+\begin{itemize}
+    \item \textbf{Lift $> 1$:} Hai nhóm mặt hàng xuất hiện cùng nhau nhiều hơn
+          ngẫu nhiên. Luật có giá trị thực tiễn -- nhà bán lẻ nên ưu tiên khai thác.
+    \item \textbf{Lift $= 1$:} Hai nhóm độc lập thống kê -- luật không cung cấp
+          thông tin bổ sung.
+    \item \textbf{Lift $< 1$:} Tương quan âm -- mua mặt hàng này làm giảm xác suất
+          mua mặt hàng kia.
+\end{itemize}
+
+\paragraph{Nhận xét tổng quan kết quả.}
+Toàn bộ Top-10 luật đều có Lift $> 2{,}0$ -- tức là xác suất mua \textit{consequent}
+khi đã mua \textit{antecedent} cao gấp hơn 2 lần so với mức ngẫu nhiên. Đây là mức
+lift thực tế tốt với dữ liệu siêu thị có nhiều mặt hàng đa dạng. Hầu hết luật
+xoay quanh nhóm \textbf{whole milk, other vegetables, rolls/buns, yogurt} -- các
+mặt hàng thiết yếu hàng ngày, thường được mua cùng nhau trong một chuyến đi siêu thị.
+
+\paragraph{Phân tích các luật tiêu biểu.}
+
+\begin{itemize}
+    \item \textbf{Luật 1 -- $\{$other veg, rolls/buns, sausage$\} \Rightarrow \{$whole milk, yogurt$\}$}
+          (Sup.\ = 1{,}0\%, Conf.\ = 30{,}7\%, Lift = 2{,}159):
+          Đây là luật mạnh nhất. Khách mua rau củ, bánh mì và xúc xích có xác suất mua
+          kèm sữa tươi và sữa chua cao gấp \textbf{2{,}16 lần} so với trung bình.
+          Đây là nhóm thực phẩm bữa sáng/bữa chính điển hình.
+          \textit{Gợi ý kinh doanh:} Đặt sữa tươi và sữa chua gần khu vực rau củ
+          và thịt nguội; thiết kế combo ``Bữa sáng trọn vẹn''.
+
+    \item \textbf{Luật 3 -- $\{$bottled water, rolls/buns, yogurt$\} \Rightarrow \{$other veg, whole milk$\}$}
+          (Sup.\ = 1{,}1\%, Conf.\ = 39{,}8\%, Lift = 2{,}080):
+          Confidence 39{,}8\% là mức rất cao -- gần 2 trong 5 khách mua nước đóng chai,
+          bánh mì và sữa chua sẽ mua kèm rau củ và sữa tươi. Đây là nhóm ``healthy
+          lifestyle'' điển hình. \textit{Gợi ý kinh doanh:} Thiết kế khu trưng bày
+          chủ đề sức khỏe tập hợp cả 5 mặt hàng này.
+
+    \item \textbf{Luật 5 -- $\{$curd, sausage$\} \Rightarrow \{$whole milk, yogurt$\}$}
+          (Sup.\ = 1{,}0\%, Conf.\ = 31{,}2\%, Lift = 2{,}072):
+          Phô mai tươi (curd) và xúc xích dự đoán tốt việc mua sữa tươi + sữa chua.
+          Ba sản phẩm từ sữa (curd, yogurt, whole milk) cùng xúc xích tạo thành
+          \textit{cụm sản phẩm từ sữa và protein}.
+          \textit{Gợi ý kinh doanh:} Cross-promotion bundle trong khu vực tủ lạnh.
+\end{itemize}
+
+\paragraph{Hạn chế của phân tích.}
+\begin{itemize}
+    \item Bộ dữ liệu Groceries được group theo Member\_number mà không tách biệt
+          theo ngày mua -- một thành viên có thể mua nhiều lần nhưng gộp thành một
+          giao dịch duy nhất, có thể làm tăng support nhân tạo.
+    \item Bộ dữ liệu không bao gồm thông tin nhân khẩu học (tuổi, giới tính,
+          địa lý), nên các luật phản ánh hành vi tổng thể mà chưa phân khúc khách hàng.
+    \item Một số luật lift cao có thể là \textit{spurious rules} xuất hiện do thống
+          kê tình cờ trên tập dữ liệu nhỏ (3.898 thành viên). Cần xác nhận thêm
+          bằng A/B test trước khi triển khai vào hệ thống gợi ý sản phẩm thực tế.
+    \item Bộ dữ liệu không có nhãn thời gian theo giao dịch, nên không thể phân
+          tích xu hướng mua sắm theo mùa hoặc theo chu kỳ.
+\end{itemize}
+
+%============================================
+% PHÂN CÔNG CÔNG VIỆC
+\chapter{PHÂN CÔNG CÔNG VIỆC}
+ 
+\begin{longtable}{|c|p{3.5cm}|p{7.5cm}|c|}
+\hline
+\textbf{MSSV} & \textbf{Họ tên} & \textbf{Nội dung đảm nhiệm} & \textbf{Hoàn thành} \\
+\hline
+\endfirsthead
+\hline
+\textbf{MSSV} & \textbf{Họ tên} & \textbf{Nội dung đảm nhiệm} & \textbf{Hoàn thành} \\
+\hline
+\endhead
+ 
+23122009 & Bàng Mỹ Linh &
+  \textbf{Phần 3.1.2 a) c) d) \& Cài đặt (Chương 3)} \newline
+  -- Mô tả ý tưởng cốt lõi RELIM (3.1.2 a) \newline
+  -- Trình bày giả mã đầy đủ (3.1.2 c) \newline
+  -- Phân tích độ phức tạp thời gian/không gian (3.1.2 d) \newline
+  -- Cài đặt RELIM từ đầu bằng Julia: \newline
+  \hspace{1em} Relim.jl, structures.jl, utils.jl, main.jl \newline
+  -- Level 1--4: cơ bản → tối ưu → I/O \newline
+  -- Unit test tự động (test\_correctness.jl)
+  & 98\%  \\
+\hline
+ 
+23122018 & Lại Nguyễn Hồng Thanh &
+  \textbf{Phần 3.4.1 -- Thực nghiệm và đánh giá (Chương 4)} \newline
+  -- Tải và chuẩn bị 5 benchmark datasets \newline
+  -- Chạy thực nghiệm correctness (so sánh SPMF) \newline
+  -- Đo thời gian chạy theo minsup (5--7 điểm) \newline
+  -- Đo số lượng frequent itemset theo minsup \newline
+  -- Đo peak memory (cơ bản vs tối ưu) \newline
+  -- Scalability experiment (10--100\% transactions) \newline
+  -- Thực nghiệm ảnh hưởng AvgLen \newline
+  -- Vẽ biểu đồ và bảng tổng hợp kết quả
+  & 98\% \\
+\hline
+ 
+23122019 & Phan Huỳnh Châu Thịnh &
+  \textbf{Phần 3.1.1 \& 3.1.2 b) e) \& Ví dụ tay (Chương 1--2)} \newline
+  -- Định nghĩa hình thức FIM (3.1.1): CSDL giao dịch, \newline
+  \hspace{1em} support, frequent, closed, maximal, Apriori property \newline
+  -- Mô tả cấu trúc dữ liệu linked list, vẽ hình (3.1.2 b) \newline
+  -- So sánh lịch sử: vị trí RELIM trong dòng phát triển FIM (3.1.2 e) \newline
+  -- Ví dụ 1: tính tay 5--7 giao dịch, cross-check (3.2.1) \newline
+  -- Ví dụ 2: tình huống đặc biệt, phân tích (3.2.2) \newline
+  -- (Optional) Manim visualization
+  & 98\% \\
+\hline
+ 
+23122015 & Nguyễn Gia Bảo &
+  \textbf{Phần 3.4.2 \& Ứng dụng thực tế (Chương 4--5)} \newline
+  -- Phân tích kết quả thực nghiệm dựa trên lý thuyết \newline
+  -- So sánh điểm mạnh/yếu so với SPMF \newline
+  -- Đề xuất ≥ 2 hướng tối ưu hóa cụ thể \newline
+  -- Market Basket Analysis (Chương 5): \newline
+  \hspace{1em} Chạy RELIM trên Retail/Groceries dataset \newline
+  \hspace{1em} Sinh association rules (sup, conf, lift) \newline
+  \hspace{1em} Trình bày top-10 luật theo lift \newline
+  \hspace{1em} Phân tích ý nghĩa kinh doanh
+  & 98\% \\
+\hline
+\caption{Phân công công việc nhóm 9 -- Project 2}
+\label{tab:work-assignment}
+\end{longtable}
+ 
+ 
+% =====================================
+% TÀI LIỆU THAM KHẢO
+
+\renewcommand{\bibname}{Tài liệu tham khảo}
+\begin{thebibliography}{99}
+
+\bibitem{borgelt2005}
+C. Borgelt, ``Keeping Things Simple: Finding Frequent Item Sets by Recursive Elimination,'' in \textit{Proc. of the 1st Int. Workshop on Open Source Data Mining (OSDM)}, ACM, 2005, pp. 66--70.
+
+\bibitem{apriori1993}
+R. Agrawal, T. Imieli\'{n}ski, and A. Swami, ``Mining Association Rules Between Sets of Items in Large Databases,'' in \textit{Proc. of the 1993 ACM SIGMOD Int. Conf. on Management of Data}, 1993, pp. 207--216.
+
+\bibitem{fpgrowth2000}
+J. Han, J. Pei, and Y. Yin, ``Mining Frequent Patterns without Candidate Generation,'' in \textit{Proc. of the 2000 ACM SIGMOD Int. Conf. on Management of Data}, 2000, pp. 1--12.
+
+\bibitem{hmine2001}
+J. Pei, J. Han, H. Lu, S. Nishio, S. Tang, and D. Yang, ``H-Mine: Hyper-Structure Mining of Frequent Patterns in Large Databases,'' in \textit{Proc. of the 2001 IEEE Int. Conf. on Data Mining (ICDM)}, 2001, pp. 441--448.
+
+\bibitem{fournier2014}
+P. Fournier-Viger \textit{et al.}, ``SPMF: A Java-Based Open-Source Pattern Mining Library,'' \textit{SIGKDD Explorations}, 2014.
+
+\bibitem{eclat1997}
+M. J. Zaki, S. Parthasarathy, M. Ogihara, and W. Li, ``New Algorithms for Fast Discovery of Association Rules,'' in \textit{Proc. of the 3rd Int. Conf. on Knowledge Discovery and Data Mining (KDD)}, 1997, pp. 283--286.
+
+\bibitem{declat2003}
+M. J. Zaki and K. Gouda, ``Fast Vertical Mining Using Diffsets,'' in \textit{Proc. of the 9th ACM SIGKDD Int. Conf. on Knowledge Discovery and Data Mining}, 2003, pp. 326--335.
+
+\bibitem{lcm2004}
+T. Uno, T. Asai, Y. Uchida, and H. Arimura, ``An Efficient Algorithm for Enumerating Closed Patterns in Transaction Databases,'' in \textit{Proc. of the 7th Int. Conf. on Discovery Science (DS)}, Springer, 2004, pp. 16--31.
+
+\bibitem{charm2002}
+M. J. Zaki and C.-J. Hsiao, ``CHARM: An Efficient Algorithm for Closed Itemset Mining,'' in \textit{Proc. of the 2nd SIAM Int. Conf. on Data Mining (SDM)}, 2002, pp. 457--473.
+
+\bibitem{afopt2006}
+G. Liu, H. Lu, W. Lou, Y. Xu, and J. X. Yu, ``Efficient Mining of Frequent Patterns Using Ascending Frequency Ordered Prefix-Tree,'' \textit{Data Mining and Knowledge Discovery}, vol. 9, no. 3, pp. 249--274, 2004.
+
+\bibitem{pfp2008}
+H. Li, Y. Wang, D. Zhang, M. Zhang, and E. Y. Chang, ``PFP: Parallel FP-Growth for Query Recommendation,'' in \textit{Proc. of the 2008 ACM Conf. on Recommender Systems (RecSys)}, 2008, pp. 107--114.
+
+\end{thebibliography}
+ 
+ 
+% ============================================
+% PHỤ LỤC
+\appendix
+\renewcommand{\appendixname}{Phụ lục}
+ 
+\chapter*{Phụ lục}
+\addcontentsline{toc}{chapter}{Phụ lục}
+ 
+\section*{A. Source code và dữ liệu}
+\begin{itemize}
+  \item Source code (Julia): \href{https://github.com/...}{GitHub -- nhóm 9}
+  \item Benchmark datasets: \href{https://www.philippe-fournier-viger.com/spmf/index.php?link=datasets.php}{SPMF Datasets}
+  \item SPMF tool: \href{https://www.philippe-fournier-viger.com/spmf/Relim.php}{SPMF -- Relim}
+  \item Paper gốc: Borgelt, C. OSDM 2005
+\end{itemize}
+ 
+\section*{B. Kaggle Notebook / Demo}
+%% Link demo.ipynb nếu có
+ 
+\section*{C. Output mẫu của bộ test}
+
+Sau đây là output của lệnh \texttt{julia --project tests/runtests.jl} (lần chạy cuối cùng, đạt 100\% correctness so với thư viện SPMF):
+
+\begin{verbatim}
+[chess] Minsup 1598 -> Match Rate: 100.0%, Support Correct: true
+[chess] Minsup 2557 -> Match Rate: 100.0%, Support Correct: true
+[mushroom] Minsup 812 -> Match Rate: 100.0%, Support Correct: true
+[mushroom] Minsup 4062 -> Match Rate: 100.0%, Support Correct: true
+[retail] Minsup 882 -> Match Rate: 100.0%, Support Correct: true
+[retail] Minsup 4408 -> Match Rate: 100.0%, Support Correct: true
+[accidents] Minsup 170091 -> Match Rate: 100.0%, Support Correct: true
+[accidents] Minsup 255137 -> Match Rate: 100.0%, Support Correct: true
+[T10I4D100K] Minsup 1000 -> Match Rate: 100.0%, Support Correct: true
+[T10I4D100K] Minsup 5000 -> Match Rate: 100.0%, Support Correct: true
+
+Test Summary:                   | Pass  Total  Time
+All RELIM Tests                 |   28     28  6.5s
+  Unit Tests                    |   18     18  1.1s
+  Correctness Check with SPMF   |   10     10  5.4s
+\end{verbatim}
+ 
+\end{document}

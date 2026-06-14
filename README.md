@@ -125,14 +125,27 @@ Ví dụ: `2 3 5 #SUP: 2` nghĩa là itemset `{2, 3, 5}` xuất hiện trong 2 g
 ## 5. Chạy bộ test
 
 ```bash
-julia --project=. tests/test_correctness.jl
+julia --project=. tests/runtests.jl
 ```
 
-Kết quả mong đợi:
+**Output của lần chạy cuối (Tất cả test đều PASS 100% so với SPMF):**
 
-```
-Test Summary:     | Pass  Total  Time
-RELIM correctness |   18     18  ~1.5s
+```text
+[chess] Minsup 1598 -> Match Rate: 100.0%, Support Correct: true
+[chess] Minsup 2557 -> Match Rate: 100.0%, Support Correct: true
+[mushroom] Minsup 812 -> Match Rate: 100.0%, Support Correct: true
+[mushroom] Minsup 4062 -> Match Rate: 100.0%, Support Correct: true
+[retail] Minsup 882 -> Match Rate: 100.0%, Support Correct: true
+[retail] Minsup 4408 -> Match Rate: 100.0%, Support Correct: true
+[accidents] Minsup 170091 -> Match Rate: 100.0%, Support Correct: true
+[accidents] Minsup 255137 -> Match Rate: 100.0%, Support Correct: true
+[T10I4D100K] Minsup 1000 -> Match Rate: 100.0%, Support Correct: true
+[T10I4D100K] Minsup 5000 -> Match Rate: 100.0%, Support Correct: true
+
+Test Summary:                   | Pass  Total  Time
+All RELIM Tests                 |   28     28  6.5s
+  Unit Tests                    |   18     18  1.1s
+  Correctness Check with SPMF   |   10     10  5.4s
 ```
 
 Bộ test bao gồm:
@@ -140,6 +153,7 @@ Bộ test bao gồm:
 - Các trường hợp biên (DB rỗng, không item phổ biến, tất cả item phổ biến),
 - So sánh phiên bản có / không bật `counter_only`,
 - 10 trial ngẫu nhiên đối chứng với brute-force.
+- Test so khớp trực tiếp kết quả với file chuẩn sinh từ Java SPMF trên 5 bộ benchmark (Chess, Mushroom, Retail, Accidents, T10I4D100K).
 
 ---
 
@@ -157,7 +171,9 @@ relim_datamining_julia/
 │       ├── relim.jl          # Thuật toán RELIM
 │       └── visualize.jl      # Visualize từng bước
 ├── tests/
-│   ├── test_correctness.jl   # Unit test (so brute-force)
+│   ├── runtests.jl           # Script chạy tổng hợp tất cả các test
+│   ├── test_correctness.jl   # Test so sánh SPMF
+│   ├── test_unit.jl          # Unit test (so brute-force)
 │   └── test_benchmark.jl     # Benchmark + so với SPMF
 ├── data/
 │   ├── toy/                  # CSDL nhỏ cho ví dụ tay

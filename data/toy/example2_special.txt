@@ -1,0 +1,7 @@
+# Ví dụ 2: Tình huống đặc biệt Counter-Only — 5 giao dịch, 4 item {a,b,c,d}, minsup = 3
+# TID | Items
+1 | a b c d
+2 | a b
+3 | a c
+4 | b c d
+5 | b d
